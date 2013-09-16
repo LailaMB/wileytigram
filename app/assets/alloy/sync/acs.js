@@ -26,7 +26,7 @@ function Sync(method, model, options) {
  * this is a separate handler for when the object being processed
  * is an ACS Photo
  */
-function processACSPhotos(model, method, options) {
+function processACSPhotos(model, method, opts) {
 	switch (method) {
 		case "create":
 			// include attributes into the params for ACS
@@ -37,34 +37,34 @@ function processACSPhotos(model, method, options) {
 					model.meta = e.meta;
 
 					// return the individual photo object found
-					options.success(e.photos[0]);
+					opts.success(e.photos[0]);
 
 					// trigger fetch for UI updates
 					model.trigger("fetch");
 				} else {
 					Ti.API.error("Photos.create " + e.message);
-					options.error(e.error && e.message || e);
+					opts.error(e.error && e.message || e);
 				}
 			});
 			break;
 		case "read":
-			model.id && (optionss.data.photo_id = model.id);
+			model.id && (opts.data.photo_id = model.id);
 
 			var method = model.id ? Cloud.Photos.show : Cloud.Photos.query;
 
-			method((options.data || {}), function(e) {
+			method((opts.data || {}), function(e) {
 				if (e.success) {
 					model.meta = e.meta;
 					if (e.photos.length === 1) {
-						options.success(e.photos[0]);
+						opts.success(e.photos[0]);
 					} else {
-						options.success(e.photos);
+						opts.success(e.photos);
 					}
 					model.trigger("fetch");
 					return;
 				} else {
 					Ti.API.error("Cloud.Photos.query " + e.message);
-					options.error(e.error && e.message || e);
+					opts.error(e.error && e.message || e);
 				}
 			});
 			break;

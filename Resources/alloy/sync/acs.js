@@ -17,33 +17,33 @@ function Sync(method, model, options) {
     "photos" === object_name ? processACSPhotos(model, method, options) : "users" === object_name && processACSUsers(model, method, options);
 }
 
-function processACSPhotos(model, method, options) {
+function processACSPhotos(model, method, opts) {
     switch (method) {
       case "create":
         Cloud.Photos.create(model.toJSON(), function(e) {
             if (e.success) {
                 model.meta = e.meta;
-                options.success(e.photos[0]);
+                opts.success(e.photos[0]);
                 model.trigger("fetch");
             } else {
                 Ti.API.error("Photos.create " + e.message);
-                options.error(e.error && e.message || e);
+                opts.error(e.error && e.message || e);
             }
         });
         break;
 
       case "read":
-        model.id && (optionss.data.photo_id = model.id);
+        model.id && (opts.data.photo_id = model.id);
         var method = model.id ? Cloud.Photos.show : Cloud.Photos.query;
-        method(options.data || {}, function(e) {
+        method(opts.data || {}, function(e) {
             if (e.success) {
                 model.meta = e.meta;
-                1 === e.photos.length ? options.success(e.photos[0]) : options.success(e.photos);
+                1 === e.photos.length ? opts.success(e.photos[0]) : opts.success(e.photos);
                 model.trigger("fetch");
                 return;
             }
             Ti.API.error("Cloud.Photos.query " + e.message);
-            options.error(e.error && e.message || e);
+            opts.error(e.error && e.message || e);
         });
         break;
 
