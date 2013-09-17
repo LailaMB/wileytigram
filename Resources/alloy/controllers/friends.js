@@ -6,26 +6,25 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    $.__views.__alloyId2 = Ti.UI.createWindow({
+    $.__views.__alloyId7 = Ti.UI.createWindow({
         backgroundColor: "#fff",
         title: "Friends",
-        id: "__alloyId2"
+        id: "__alloyId7"
     });
-    $.__views.__alloyId3 = Ti.UI.createLabel({
+    $.__views.__alloyId8 = Ti.UI.createLabel({
         width: Ti.UI.SIZE,
         height: Ti.UI.SIZE,
         color: "#000",
         font: {
-            fontSize: 20,
-            fontFamily: "Helvetica Neue"
+            fontSize: "18sp"
         },
         textAlign: "center",
         text: "This is a Friends tab",
-        id: "__alloyId3"
+        id: "__alloyId8"
     });
-    $.__views.__alloyId2.add($.__views.__alloyId3);
+    $.__views.__alloyId7.add($.__views.__alloyId8);
     $.__views.friends = Ti.UI.createTab({
-        window: $.__views.__alloyId2,
+        window: $.__views.__alloyId7,
         title: "Friends",
         id: "friends"
     });

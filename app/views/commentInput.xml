@@ -1,0 +1,15 @@
+<Alloy>
+    <Window id="mainWindow">
+        <LeftNavButton platform="ios">
+            <Button id="cancelButton">Cancel</Button>
+        </LeftNavButton>
+        <RightNavButton platform="ios">
+            <Button id="saveButton">Save</Button>
+        </RightNavButton>
+        <TextArea id="commentContent"/>
+    </Window>
+</Alloy>
+<Alloy>
+	<View class="container">
+	</View>
+</Alloy>

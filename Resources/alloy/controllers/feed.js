@@ -1,28 +1,4 @@
 function Controller() {
-    function cameraButtonClicked() {
-        alert("user clicked camera button");
-        var photoSource = inSimulator ? Titanium.Media.openPhotoGallery : Titanium.Media.showCamera;
-        photoSource({
-            success: function(event) {
-                processImage(event.media, function(processResponse) {
-                    if (processResponse.success) {
-                        var rowController = Alloy.createController("feedRow", processResponse.model);
-                        if (0 === $.feedTable.getData().length) {
-                            $.feedTable.setData([]);
-                            $.feedTable.appendRow(rowController.getView(), true);
-                        } else $.feedTable.insertRowBefore(0, rowController.getView(), true);
-                    } else alert("Error saving photo " + processResponse.message);
-                });
-            },
-            cancel: function() {},
-            error: function(error) {
-                error.code == Titanium.Media.NO_CAMERA ? alert("Please run this test on device") : alert("Unexpected error: " + error.code);
-            },
-            saveToPhotoGallery: false,
-            allowEditing: true,
-            mediaTypes: [ Ti.Media.MEDIA_TYPE_PHOTO ]
-        });
-    }
     function processImage(_mediaObject, _callback) {
         var parameters = {
             photo: _mediaObject,
@@ -79,6 +55,19 @@ function Controller() {
             }
         });
     }
+    function proccessTableClicks(_event) {
+        "commentButton" === _event.source.id ? handleCommentButtonClicked(_event) : "shareButton" === _event.source.id && alert("Will do this later!!");
+    }
+    function handleCommentButtonClicked(_event) {
+        var collection = Alloy.Collections.instance("Photo");
+        var model = collection.get(_event.row.row_id);
+        var commentController = Alloy.createController("comment", {
+            photo: model,
+            parentController: $
+        });
+        commentController.initialize();
+        Alloy.Globals.openCurrentTabWindow(commentController.getView());
+    }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "feed";
     arguments[0] ? arguments[0]["__parentSymbol"] : null;
@@ -108,8 +97,33 @@ function Controller() {
     $.__views.feedTab && $.addTopLevelView($.__views.feedTab);
     exports.destroy = function() {};
     _.extend($, $.__views);
-    var inSimulator = -1 !== Ti.Platform.model.indexOf("Simulator") || "x86_64" == Ti.Platform.model || "google_sdk" == Ti.Platform.model;
-    $.cameraButton.addEventListener("click", cameraButtonClicked);
+    true && $.cameraButton.addEventListener("click", function(_event) {
+        $.cameraButtonClicked(_event);
+    });
+    $.feedTable.addEventListener("click", proccessTableClicks);
+    $.cameraButtonClicked = function() {
+        alert("user clicked camera button");
+        Titanium.Media.showCamera({
+            success: function(event) {
+                processImage(event.media, function(processResponse) {
+                    if (processResponse.success) {
+                        var rowController = Alloy.createController("feedRow", processResponse.model);
+                        if (0 === $.feedTable.getData().length) {
+                            $.feedTable.setData([]);
+                            $.feedTable.appendRow(rowController.getView(), true);
+                        } else $.feedTable.insertRowBefore(0, rowController.getView(), true);
+                    } else alert("Error saving photo " + processResponse.message);
+                });
+            },
+            cancel: function() {},
+            error: function(error) {
+                error.code == Titanium.Media.NO_CAMERA ? alert("Please run this test on device") : alert("Unexpected error: " + error.code);
+            },
+            saveToPhotoGallery: false,
+            allowEditing: true,
+            mediaTypes: [ Ti.Media.MEDIA_TYPE_PHOTO ]
+        });
+    };
     $.initialize = function() {
         Alloy.Collections.photo && Alloy.Collections.photo.reset();
         loadPhotos();

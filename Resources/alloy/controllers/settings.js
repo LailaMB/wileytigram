@@ -6,26 +6,25 @@ function Controller() {
     arguments[0] ? arguments[0]["__itemTemplate"] : null;
     var $ = this;
     var exports = {};
-    $.__views.__alloyId7 = Ti.UI.createWindow({
+    $.__views.__alloyId11 = Ti.UI.createWindow({
         backgroundColor: "#fff",
         title: "Settings",
-        id: "__alloyId7"
+        id: "__alloyId11"
     });
-    $.__views.__alloyId8 = Ti.UI.createLabel({
+    $.__views.__alloyId12 = Ti.UI.createLabel({
         width: Ti.UI.SIZE,
         height: Ti.UI.SIZE,
         color: "#000",
         font: {
-            fontSize: 20,
-            fontFamily: "Helvetica Neue"
+            fontSize: "18sp"
         },
         textAlign: "center",
         text: "This is a Settings tab",
-        id: "__alloyId8"
+        id: "__alloyId12"
     });
-    $.__views.__alloyId7.add($.__views.__alloyId8);
+    $.__views.__alloyId11.add($.__views.__alloyId12);
     $.__views.settings = Ti.UI.createTab({
-        window: $.__views.__alloyId7,
+        window: $.__views.__alloyId11,
         title: "Settings",
         id: "settings"
     });

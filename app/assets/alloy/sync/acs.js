@@ -12,15 +12,17 @@ function InitAdapter(config) {
 	config.Cloud = Cloud;
 }
 
-function Sync(method, model, options) {
+function Sync(method, model, opts) { debugger;
 	var object_name = model.config.adapter.collection_name;
 
 	if (object_name === "photos") {
-		processACSPhotos(model, method, options);
+		processACSPhotos(model, method, opts);
 	} else if (object_name === "users") {
-		processACSUsers(model, method, options);
+		processACSUsers(model, method, opts);
+	} else if (object_name === "reviews") {
+		processACSComments(model, method, opts);
 	}
-};
+}
 
 /**
  * this is a separate handler for when the object being processed
@@ -73,6 +75,65 @@ function processACSPhotos(model, method, opts) {
 			// Not currently implemented, let the user know
 			alert("Not Implemented Yet");
 			break;
+	}
+}
+
+function processACSComments(model, method, opts) {
+
+	switch (method) {
+		case "create":
+			// stick attributes into the params variable
+			var params = model.toJSON();
+
+			Cloud.Reviews.create(params, function(e) {
+				if (e.success) {
+					model.meta = e.meta;
+					opts.success && opts.success(e.reviews[0]);
+					model.trigger("fetch");
+				} else {
+					Ti.API.error("Comments.create " + e.message);
+					opts.error && opts.error(e.error && e.message || e);
+				}
+			});
+		case "read":
+			// since we are only ever listing the reviews/comments,
+			// we only need to support querying the objects
+			Cloud.Reviews.query((opts.data || {}), function(e) {
+				if (e.success) {
+					model.meta = e.meta;
+					if (e.reviews.length === 1) {
+						opts.success(e.reviews[0]);
+					} else {
+						opts.success(e.reviews);
+					}
+					model.trigger("fetch");
+					return;
+				} else {
+					Ti.API.error("Reviews.query " + e.message);
+					opts.error(e.error && e.message || e);
+				}
+			});
+			break;
+		case "update":
+		case "delete":
+			var params = {};
+
+			// look for the review id in opts or on model
+			params.review_id = model.id = opts.id || model.id;
+
+			// get the id of the associated photo
+			params.photo_id = opts.photo_id;
+
+			Cloud.Reviews.remove(params, function(e) {
+				if (e.success) {
+					model.meta = e.meta;
+					opts.success && opts.success({}), model.trigger("fetch");
+					return;
+				}
+				Ti.API.error(e);
+				opts.error && opts.error(e.error && e.message || e);
+			});
+
 	}
 }
 
