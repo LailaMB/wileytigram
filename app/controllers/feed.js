@@ -1,6 +1,8 @@
 // EVENT LISTENERS
 // there will only be a camera button on IOS
-OS_IOS && $.cameraButton.addEventListener("click", $.cameraButtonClicked);
+OS_IOS && $.cameraButton.addEventListener("click", function(_event) {
+  $.cameraButtonClicked(_event);
+});
 
 // EVENT HANDLERS
 /**
