@@ -21,7 +21,13 @@
   width : '50%',
   height : '32dp'
 },
+"#commentButton[platform=android]" : {
+  height : '42dp'
+},
 "#shareButton" : {
   width : '50%',
   height : '32dp'
+},
+"#shareButton[platform=android]" : {
+  height : '42dp'
 }
