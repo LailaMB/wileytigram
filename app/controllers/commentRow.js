@@ -1,3 +1,5 @@
+var moment = require('alloy/moment');
+
 var model = arguments[0] || {};
 var user = model.attributes.user;
 

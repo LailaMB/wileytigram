@@ -5,28 +5,17 @@ var parentController = parameters.parentController || {};
 
 var comments = Alloy.Collections.instance("Comment");
 
-$.newCommentButton.addEventListener("click", handleNewCommentButtonClicked);
+$.newCommentButton && $.newCommentButton.addEventListener("click", handleNewCommentButtonClicked);
 $.commentTable.addEventListener("delete", handleDeleteRow);
 
-function loadComments() {
+function loadComments(_photo_id) {
+    var rows = [];
 
 	// creates or gets the global instance of comment collection
 	var comments = Alloy.Collections.instance("Comment");
 
-	if (_useCache && comments.length !== 0) {
-		$.commentTable.setData([]);
-
-		comments.each(function(comment) {
-			var commentRow = Alloy.createController("commentRow", comment);
-			rows.push(commentRow.getView());
-		});
-		$.commentTable.data = rows;
-		$.commentTable.editable = true;
-		return;
-	}
-
 	var params = {
-		photo_id : currentPhoto.id,
+        photo_id : _photo_id || currentPhoto.id,
 		order : '-created_at',
 		per_page : 100
 	};
@@ -59,7 +48,7 @@ function handleNewCommentButtonClicked(_event) {
 
 	// open the view
 	inputController.getView().open({
-		modal : true
+        modal : OS_ANDROID ? false : true
 	});
 
 };
@@ -72,7 +61,7 @@ function inputCallback(_event) {
 	}
 };
 
-function addComment() {
+function addComment(_content, _callback) {
 	var comment = Alloy.createModel('Comment');
 	var params = {
 		photo_id : currentPhoto.id,
@@ -154,4 +143,55 @@ function deleteComment(_comment, _callback) { debugger;
 	});
 }
 
+function closeWindowEventHandler() {
+    Ti.API.debug("closing window");
+    $.getView().removeEventListener("close", closeWindowEventHandler);
+}
+
+function androidBackEventHandler(_event) {
+    _event.cancelBubble = true;
+    _event.bubbles = false;
+    Ti.API.debug("androidback event");
+    $.getView().removeEventListener("androidback", androidBackEventHandler);
+    $.getView().close();
+}
+
+// Setup the menus for Android if necessary
+function doOpen() {
+    Ti.Android && ($.getView().activity.onCreateOptionsMenu = function(_event) {
+        var activity = $.getView().activity;
+        var actionBar = activity.actionBar;
+        if (actionBar) {
+            actionBar.displayHomeAsUp = true;
+            actionBar.onHomeIconItemSelected = function() {
+                $.getView().close();
+            };
+        } else {
+            alert("No Action Bar Found");
+        }
+
+        /**
+         * add the button to the titlebar
+         */
+        //Add a title to the tabgroup. We could also add menu items here if
+        // needed
+        Ti.API.info('IN onCreateOptionsMenu comment.js');
+
+        var menuItem = _event.menu.add({
+            title : "New Comment",
+            showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
+            icon : Ti.Android.R.drawable.ic_menu_edit
+        });
+        menuItem.addEventListener("click", function(e) {
+            handleNewCommentButtonClicked();
+        });
+    });
+};
+
+/**
+ *
+ */
+$.initialize = function() {
+    loadComments();
+};
 

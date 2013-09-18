@@ -8,4 +8,4 @@ $.image.image = model.attributes.urls.preview;
 $.titleLabel.text = model.attributes.title || '';
 
 // save the model id for use later in app
-$.row_id = model.id || '';
+$.row.row_id = model.id || '';

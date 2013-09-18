@@ -1,5 +1,5 @@
 <Alloy>
-    <Window id="mainWindow">
+    <Window id="mainWindow" title="New Comment"  onOpen="doOpen">
         <LeftNavButton platform="ios">
             <Button id="cancelButton">Cancel</Button>
         </LeftNavButton>
@@ -8,8 +8,4 @@
         </RightNavButton>
         <TextArea id="commentContent"/>
     </Window>
-</Alloy>
-<Alloy>
-	<View class="container">
-	</View>
 </Alloy>
