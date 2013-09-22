@@ -5,9 +5,8 @@ var parentController = parameters.parentController || {};
 var callbackFunction = parameters.callback || null;
 
 // EVENT LISTENERS
-$.saveButton && $.saveButton.addEventListener("click", handleButtonClicked);
-$.cancelButton && $.cancelButton.addEventListener("click", handleButtonClicked);
-$.mainWindow.addEventListener("open", handleWindowOpened); 
+OS_IOS && $.saveButton.addEventListener("click", handleButtonClicked);
+OS_IOS && $.cancelButton.addEventListener("click", handleButtonClicked);
 
 $.getView().addEventListener("close", closeWindowEventHandler);
 $.getView().addEventListener("androidback", androidBackEventHandler);
@@ -25,10 +24,11 @@ function androidBackEventHandler(_event) {
     _event.bubbles = false;
     Ti.API.debug("androidback event");
     $.getView().removeEventListener("androidback", androidBackEventHandler);
-    
+
     // if back button is hit then it is the same as cancelling input
     handleButtonClicked({});
 }
+
 /**
  * user selected save, take the content and send it back to be saved
  * user selected cancel, send false and null for content
@@ -60,43 +60,61 @@ function handleButtonClicked(_event) {
 }
 
 /**
- * set the focus on the text area after the window opens so the users
- * can start typing without selecting the text area first
+ * Setup the menus for Android if necessary
  *
- * @param {Object} _event
+ * set the focus to the input field
  */
-function handleWindowOpened(_event) {
-    $.commentContent.focus();
-}
-
-// Setup the menus for Android if necessary
 function doOpen() {
-    OS_ANDROID && ($.getView().activity.onCreateOptionsMenu = function(_event) {
-        var activity = $.getView().activity;
-        var actionBar = activity.actionBar;
-        if (actionBar) {
-            actionBar.displayHomeAsUp = true;
-            actionBar.onHomeIconItemSelected = function() {
-                $.getView().close();
-            };
-        } else {
-            alert("No Action Bar Found");
-        }
+    if (OS_ANDROID) {
 
-        /**
-         * add the button to the titlebar
-         */
-        //Add a title to the tabgroup. We could also add menu items here if needed
-        Ti.API.info('IN onCreateOptionsMenu commentInput.js');
-        
-        var menuItem = _event.menu.add({
-            id : "saveButton",
-            title : "Save Comment",
-            showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
-        });
-        menuItem.addEventListener("click", function(_event) {
-            _event.source.id = "saveButton",
-            handleButtonClicked(_event);
-        });
-    });
+        $.getView().activity.onCreateOptionsMenu = function(_event) {
+
+            var activity = $.getView().activity;
+            var actionBar = $.getView().activity.actionBar;
+
+            if (actionBar) {
+                actionBar.displayHomeAsUp = true;
+                actionBar.onHomeIconItemSelected = function() {
+                    $.getView().close();
+                };
+            } else {
+                alert("No Action Bar Found");
+            }
+
+            // add the button to the titlebar
+            var mItemSave = _event.menu.add({
+                id : "saveButton",
+                title : "Save Comment",
+                showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
+                icon : Ti.Android.R.drawable.ic_menu_save
+            });
+
+            // add save menu item
+            mItemSave.addEventListener("click", function(_event) {
+                _event.source.id = "saveButton";
+                handleButtonClicked(_event);
+            });
+
+            var mItemCancel = _event.menu.add({
+                id : "cancelButton",
+                title : "Cancel",
+                showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
+                icon : Ti.Android.R.drawable.ic_menu_close_clear_cancel
+            });
+
+            // add cancel menu item
+            mItemCancel.addEventListener("click", function(_event) {
+                _event.source.id = "cancelButton";
+                handleButtonClicked(_event);
+            });
+        };
+
+    }
+
+    // set focus to the text imput field, but
+    // use set time out to give window thme to draw
+    setTimeout(function() {
+        $.commentContent.focus();
+    }, 350);
+
 };

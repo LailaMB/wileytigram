@@ -71,6 +71,7 @@ function processACSPhotos(model, method, opts) {
 			});
 			break;
 		case "update":
+		    break;
 		case "delete":
 			// Not currently implemented, let the user know
 			alert("Not Implemented Yet");
@@ -115,19 +116,20 @@ function processACSComments(model, method, opts) {
 			});
 			break;
 		case "update":
+		    break;
 		case "delete":
 			var params = {};
 
 			// look for the review id in opts or on model
-			params.review_id = model.id = opts.id || model.id;
+			params.review_id = model.id || (opts.data && opts.data.id);
 
 			// get the id of the associated photo
-			params.photo_id = opts.photo_id;
+			params.photo_id = opts.data && opts.data.photo_id;
 
 			Cloud.Reviews.remove(params, function(e) {
 				if (e.success) {
 					model.meta = e.meta;
-					opts.success && opts.success({}), model.trigger("fetch");
+					opts.success && opts.success(model.attributes);
 					return;
 				}
 				Ti.API.error(e);

@@ -23,7 +23,7 @@ Alloy.Globals.openCurrentTabWindow = function(_window) {
  */
 function doOpen() {
 
-  if (OS_ANDROID) {
+  if (Ti.Android) {
     //Add a title to the tabgroup. We could also add menu items here if
     // needed
     var activity = $.getView().activity;
