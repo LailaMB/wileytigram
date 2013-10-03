@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ti:app xmlns:ti="http://ti.appcelerator.org">
+<?xml version="1.0" encoding="UTF-8"?><ti:app xmlns:ti="http://ti.appcelerator.org">
     <property name="acs-oauth-secret-production" type="string">VjVkdwZBylVV4IHXfzAGEYbO7wZUn7qg</property>
     <property name="acs-oauth-key-production" type="string">IW93QWGzvy2tdKAsMa4sSSEtqLFaQIOu</property>
     <property name="acs-api-key-production" type="string">Zi9e8dR4foe9X1NeorXVaXDKN0GGVrnz</property>
@@ -68,5 +67,5 @@
     <plugins>
         <plugin version="1.0">ti.alloy</plugin>
     </plugins>
-    <property name="ti.deploytype">test</property>
+    <property name="ti.deploytype">development</property>
 </ti:app>
