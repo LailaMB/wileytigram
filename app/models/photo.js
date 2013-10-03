@@ -1,23 +1,23 @@
 exports.definition = {
-	config: {
+    config : {
 
-		adapter: {
-			type: "acs",
-			collection_name: "photos"
-		}
-	},
-	extendModel: function(Model) {
-		_.extend(Model.prototype, {
-			// extended functions and properties go here
-		});
+        adapter : {
+            type : "acs",
+            collection_name : "photos"
+        }
+    },
+    extendModel : function(Model) {
+        _.extend(Model.prototype, {
+            // extended functions and properties go here
+        });
 
-		return Model;
-	},
-	extendCollection: function(Collection) {
-		_.extend(Collection.prototype, {
-			// extended functions and properties go here
-		});
+        return Model;
+    },
+    extendCollection : function(Collection) {
+        _.extend(Collection.prototype, {
+            // extended functions and properties go here
+        });
 
-		return Collection;
-	}
+        return Collection;
+    }
 };

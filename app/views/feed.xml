@@ -1,10 +1,13 @@
 <Alloy>
-   <Tab id="feedTab" title="Feed">
-      <Window id="feedWindow" title="Feed">
-         <RightNavButton>
-            <Button id="cameraButton">Camera</Button>
-         </RightNavButton>
-         <TableView id="feedTable"></TableView>
-      </Window>
-   </Tab>
+	<Tab id="feedTab" title="Feed">
+		<Window id="feedWindow" title="Feed">
+			<RightNavButton>
+				<Button id="cameraButton">
+					Camera
+				</Button>
+			</RightNavButton>
+			<TableView id="feedTable">
+			</TableView>
+		</Window>
+	</Tab>
 </Alloy>
