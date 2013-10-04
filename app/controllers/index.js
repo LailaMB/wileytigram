@@ -1,3 +1,15 @@
+// Global Functions
+
+/**
+ * open the window using the tabGroup so we get the back button
+ * functionality and all of the nav bar goodness
+ *
+ * @param {Object} _window
+ */
+Alloy.Globals.openCurrentTabWindow = function(_window) {
+    $.tabGroup.activeTab.open(_window);
+};
+
 // setting the UI for Android Applications
 /**
  * on the open event of the tabGroup, setup the menu and add an

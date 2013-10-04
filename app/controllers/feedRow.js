@@ -9,3 +9,4 @@ $.titleLabel.text = model.attributes.title || '';
 
 // save the model id for use later in app
 $.row_id = model.id || '';
+
