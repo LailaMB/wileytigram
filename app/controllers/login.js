@@ -73,3 +73,27 @@ function doCreateAcctBtnClicked() {
 
     user.createAccount(params, userActionResponseHandler);
 };
+
+/**
+ * if reset is true then set the UI back to option page
+ * where the user can select the desired login method
+ */
+$.open = function(_reset) {
+
+    // if there is any facebook information from a login
+    // lets remove it to be save
+    Ti.Facebook && Ti.Facebook.logout();
+
+    // reset the UI
+    if (_reset) {
+        cancelActionButtonClicked();
+    }
+    $.index.open();
+};
+/**
+ * close the window/controller, do some clean up here
+ * if needed
+ */
+$.close = function() { debugger;
+    $.index.close();
+};

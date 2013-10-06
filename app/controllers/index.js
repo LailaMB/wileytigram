@@ -105,13 +105,10 @@ $.userNotLoggedInAction = function() {
 
     // open the login controller to login the user
     if ($.loginController === null) {
-        var loginController = Alloy.createController("login", {
+        $.loginController = Alloy.createController("login", {
             parentController : indexController,
             reset : true
         });
-
-        // save controller so we know not to create one again
-        $.loginController = loginController;
     }
 
     // open the window
@@ -121,6 +118,9 @@ $.userNotLoggedInAction = function() {
 
 // when we start up, create a user and log in
 var user = Alloy.createModel('User');
+var indexController = $;
+$.loginController = null;
+
 if (user.authenticated() === true) {
     $.userLoggedInAction();
 } else {
