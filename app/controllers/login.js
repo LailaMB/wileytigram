@@ -1,3 +1,8 @@
+var args = arguments[0] || {};
+
+// need access to the parent object
+$.parentController = args.parentController;
+
 $.showLoginBtn.addEventListener('click', showLoginBtnClicked);
 $.showCreateAccountBtn.addEventListener('click', showCreateAccountBtnClicked);
 $.cancelCreateAcctBtn.addEventListener('click', cancelActionButtonClicked);
@@ -79,10 +84,6 @@ function doCreateAcctBtnClicked() {
  * where the user can select the desired login method
  */
 $.open = function(_reset) {
-
-    // if there is any facebook information from a login
-    // lets remove it to be save
-    Ti.Facebook && Ti.Facebook.logout();
 
     // reset the UI
     if (_reset) {
