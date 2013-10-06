@@ -23,7 +23,7 @@ function handleButtonClicked(_event) {
     };
 
     // if saved, then set properties
-    if (_event.source.id === "saveButton") {
+    if (_event.source && (_event.source.id === "saveButton")) {
         returnParams = {
             success : true,
             content : $.commentContent.value
