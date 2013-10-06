@@ -34,7 +34,7 @@ function userActionResponseHandler(_resp) {
 
         // Do stuff after successful login.
         Alloy.Globals.loggedIn = true;
-        Alloy.Globals.CURRENT_USER = _response.model;
+        Alloy.Globals.CURRENT_USER = _resp.model;
 
         $.parentController.loginSuccessAction(_resp);
 
