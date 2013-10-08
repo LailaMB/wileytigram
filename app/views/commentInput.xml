@@ -1,0 +1,11 @@
+<Alloy>
+    <Window id="mainWindow" title="New Comment" onOpen="doOpen" >
+        <LeftNavButton platform="ios">
+            <Button id="cancelButton">Cancel</Button>
+        </LeftNavButton>
+        <RightNavButton platform="ios">
+            <Button id="saveButton">Save</Button>
+        </RightNavButton>
+        <TextArea id="commentContent"/>
+    </Window>
+</Alloy>
