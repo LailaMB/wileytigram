@@ -11,6 +11,53 @@ exports.definition = {
 	extendModel : function(Model) {
 		_.extend(Model.prototype, {
 
+			followUser : function(_userid, _callback) {
+				// create properties for friend
+				var friendItem = {
+					"user_ids" : _userid,
+					"approval_required" : "false"
+				};
+				var friendItemModel = Alloy.createModel('Friend');
+				friendItemModel.save(friendItem, {
+					success : function(_model, _response) {
+						_callback({
+							success : true
+						});
+					},
+					error : function(_model, _response) {
+						_callback({
+							success : false
+						});
+					}
+				});
+			},
+			getFollowers : function(_callback) {
+
+				var followers = Alloy.createCollection("Friend");
+				followers.fetch({
+					data : {
+						per_page : 100,
+						q : " ",
+						user_id : this.id,
+						followers : "true"
+					},
+					success : function(_collection, _response) {
+						_callback && _callback({
+							success : true,
+							collection : _collection
+						});
+					},
+					error : function(_model, _response) { debugger;
+						_callback && _callback({
+							success : false,
+							collection : {},
+							error : _response
+						});
+					}
+				});
+
+			},
+
 			// extended functions go here
 			login : function(_login, _password, _callback) {
 				var TAP = Ti.App.Properties;

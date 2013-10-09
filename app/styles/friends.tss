@@ -1,4 +1,21 @@
-
-".container" : {
-  
+".container": {
+	backgroundColor: "white"
 }
+"#friendsWindow" : {
+    layout: "vertical"
+},
+"#filterContainer" : {
+    top: "5dp",
+    height: Ti.UI.SIZE,
+    width: "70%"
+},
+"#filter[platform=ios]" : {
+    style: Ti.UI.iPhone.SystemButtonStyle.BAR,
+    height: 30,
+    width: "86%"
+},
+"#filter[platform=android]" : {
+    height: "38dp",
+    width: "70%",
+    selectionIndicator: true
+},
