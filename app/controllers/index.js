@@ -58,9 +58,76 @@ function doOpen() {
     }
 }
 
+
+$.userLoggedInAction = function() {
+    user.showMe(function(_response) {
+        if (_response.success === true) {
+            indexController.loginSuccessAction(_response);
+        } else {
+            alert("Application Error\n " +_response.error.message);
+            Ti.API.error(JSON.stringify(_response.error, null, 2));
+
+            // go ahead and do the login
+            $.userNotLoggedInAction();
+        }
+    });
+};
+
+$.loginSuccessAction = function(_options) {
+
+    Ti.API.info('logged in user information');
+    Ti.API.info(JSON.stringify(_options.model, null, 2));
+
+    // open the main screen
+    $.tabGroup.open();
+
+    // set tabGroup to initial tab, incase this is coming from
+    // a previously logged in state
+    $.tabGroup.setActiveTab(0);
+
+    // pre-populate the feed with recent photos
+    $.feedController.initialize();
+
+    // get the current user
+    Alloy.Globals.currentUser = _options.model;
+
+    // set the parent controller for all of the tabs, give us
+    // access to the global tab group and misc functionality
+    $.feedController.parentController = indexController;
+    $.friendsController.parentController = indexController;
+    $.settingsController.parentController = indexController;
+
+    // do any necessary cleanup in login controller
+    $.loginController && $.loginController.close();
+};
+
+$.userNotLoggedInAction = function() {
+
+    // open the login controller to login the user
+    if ($.loginController === null) {
+        $.loginController = Alloy.createController("login", {
+            parentController : indexController,
+            reset : true
+        });
+    }
+
+    // open the window
+    $.loginController.open(true);
+
+};
+
 // when we start up, create a user and log in
 var user = Alloy.createModel('User');
+var indexController = $;
+$.loginController = null;
 
+if (user.authenticated() === true) {
+    $.userLoggedInAction();
+} else {
+    $.userNotLoggedInAction();
+}
+
+/*
 // we are using the default administration account for now
 user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
     if (_response.success) {
@@ -75,3 +142,4 @@ user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
         Ti.API.error('error logging in ' + _response.error);
     }
 });
+*/
