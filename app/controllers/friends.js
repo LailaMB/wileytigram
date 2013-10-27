@@ -5,7 +5,6 @@ var sharing = require('sharing');
 // on android, we need the change event not the click event
 $.filter.addEventListener(Ti.Android ? 'change' : 'click', filterClicked);
 
-$.friendsWindow.addEventListener("close", closeWindowEventHandler);
 $.friendsWindow.addEventListener("androidback", androidBackEventHandler);
 
 function getAllUsersExceptFriends() {
@@ -232,6 +231,20 @@ function initialize() {
 	});
 
 };
+
+/**
+ * called when the back button is clicked, we will close the window
+ * and stop event from bubble up and closing the app
+ * 
+ * @param {Object} _event
+ */
+function androidBackEventHandler(_event) {
+    _event.cancelBubble = true;
+    _event.bubbles = false;
+    Ti.API.debug("androidback event");
+    $.friendsWindow.removeEventListener("androidback", androidBackEventHandler);
+    $.friendsWindow.close();
+}
 
 $.getView().addEventListener("focus", function() {
 	initialize();
