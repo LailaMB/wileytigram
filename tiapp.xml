@@ -22,6 +22,7 @@
     <analytics>true</analytics>
     <guid>9187e8a7-ab06-4981-b6c6-23b6af769d58</guid>
     <property name="ti.ui.defaultunit" type="string">system</property>
+    <property name="ti.facebook.appid">304717069667389</property>
     <iphone>
         <orientations device="iphone">
             <orientation>Ti.UI.PORTRAIT</orientation>
@@ -54,6 +55,8 @@
     </mobileweb>
     <modules>
         <module platform="commonjs">ti.cloud</module>
+        <module platform="android">facebook</module>
+        <module platform="iphone">facebook</module>
     </modules>
     <deployment-targets>
         <target device="android">true</target>

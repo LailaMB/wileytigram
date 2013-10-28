@@ -10,14 +10,15 @@ $.commentTable.addEventListener("longpress", handleDeleteRow);
 $.commentTable.editable = true;
 
 function loadComments(_photo_id) {
+    var rows = [];
+
     // creates or gets the global instance of comment collection
     var comments = Alloy.Collections.instance("Comment");
     var params = {
-        photo_id : currentPhoto.id,
+        photo_id : _photo_id || currentPhoto.id,
         order : '-created_at',
         per_page : 100
     };
-    var rows = [];
 
     comments.fetch({
         data : params,
@@ -28,6 +29,7 @@ function loadComments(_photo_id) {
             });
             // set the table rows
             $.commentTable.data = rows;
+            $.commentTable.editable = true;
         },
         error : function(error) {
             alert('Error loading comments ' + e.message);
@@ -60,7 +62,7 @@ function inputCallback(_event) {
     }
 };
 
-function addComment(_content) {
+function addComment(_content, _callback) {
     var comment = Alloy.createModel('Comment');
     var params = {
         photo_id : currentPhoto.id,
@@ -125,24 +127,29 @@ function handleDeleteRow(_event) {
     }
 }
 
+// Setup the menus for Android if necessary
 function doOpen() {
-    if (OS_ANDROID) {
-        var activity = $.getView().activity;
-        var actionBar = activity.actionBar;
+    Ti.API.info("OS_ANDROID " + OS_ANDROID);
+    Ti.API.info("OS_IOS " + OS_IOS);
+    if (OS_ANDROID === true) {
 
-        activity.onCreateOptionsMenu = function(_event) {
+        $.getView().activity.onCreateOptionsMenu = function(_event) {
+
+            var activity = $.getView().activity;
+            var actionBar = activity.actionBar;
+            var menuItem = null;
+
+            Ti.API.info('in onCreateOptionsMenu comment.js');
 
             if (actionBar) {
                 actionBar.displayHomeAsUp = true;
                 actionBar.onHomeIconItemSelected = function() {
                     $.getView().close();
                 };
-            } else {
-                alert("No Action Bar Found");
             }
 
             // add the button/menu to the titlebar
-            var menuItem = _event.menu.add({
+            menuItem = _event.menu.add({
                 title : "New Comment",
                 showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
                 icon : Ti.Android.R.drawable.ic_menu_add
@@ -152,10 +159,12 @@ function doOpen() {
             menuItem.addEventListener("click", function(e) {
                 handleNewCommentButtonClicked();
             });
+
         };
+    } else {
+        Ti.API.debug('not in android, nothing to do in doOpen');
     }
 };
-
 $.initialize = function() {
     loadComments();
 };
