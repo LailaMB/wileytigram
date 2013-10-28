@@ -8,18 +8,16 @@
 					<Labels>
 						<Label>Users</Label>
 						<Label>Friends</Label>
-						<Label>Followers</Label>
 					</Labels>
 				</TabbedBar>
 				<Picker id="filter" platform="android">
 					<PickerColumn id="column1">
 						<PickerRow title="Users"/>
 						<PickerRow title="Friends"/>
-						<PickerRow title="Followers"/>
 					</PickerColumn>
 				</Picker>
 			</View>
-			<ListView onItemclick="listItemClick" id="listView">
+			<ListView id="listView">
 				<Templates>
 					<ItemTemplate name="fullItem" height="40dp" width="Ti.UI.FILL">
 						<View id="userView">
