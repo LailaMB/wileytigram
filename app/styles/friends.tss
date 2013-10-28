@@ -1,6 +1,6 @@
 ".container": {
 	backgroundColor: "white"
-}
+},
 "#friendsWindow" : {
     layout: "vertical"
 },
@@ -16,6 +16,45 @@
 },
 "#filter[platform=android]" : {
     height: "38dp",
-    width: "70%",
-    selectionIndicator: true
+    width: "70%"
 },
+"#listView" : {
+	background : "white",
+    width: Ti.UI.FILL,
+    height: Ti.UI.FILL
+},
+"#userAvatar" : {
+    width: "36dp",
+    height:  "36dp",
+},
+"#userName" : {
+	left : "8dp",
+    width: Ti.UI.SIZE,
+    height: Ti.UI.SIZE,
+    font: {
+        fontSize: '15dp'
+    }
+},
+"#userView" : {
+	left : "4dp",
+	background : "white",
+    width: Ti.UI.FILL,
+    height: Ti.UI.FILL,
+    layout : "horizontal"
+},
+".actionBtn[platform=android]" : {
+    right : "8dp",
+    width: "90dp",
+    height: "34dp",
+    font: {
+        fontSize: '14dp'
+    }
+}
+".actionBtn[platform=ios]" : {
+    right : "8dp",
+    width: "90dp",
+    height: "26dp",
+    font: {
+        fontSize: '14dp'
+    }
+}
