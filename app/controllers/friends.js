@@ -10,7 +10,7 @@ function getAllUsersExceptFriends() {
     // which template to user when rendering listView
     $.collectionType = "fullItem";
 
-    Alloy.Globals.showIndicator("Loading Users...");
+    Alloy.Globals.PW.showIndicator("Loading Users...");
 
     // remove all items from the collection
     $.friendUserCollection.reset();
@@ -35,10 +35,10 @@ function getAllUsersExceptFriends() {
         success : function() {
             // user collection is updated into
             // $.friendUserCollection variable
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
         },
         error : function() {
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
             alert("Error Loading Users");
         }
     });
@@ -55,7 +55,7 @@ function getModelFromSelectedRow(_event) {
 
 function followBtnClicked(_event) {
 
-    Alloy.Globals.showIndicator("Updating User");
+    Alloy.Globals.PW.showIndicator("Updating User");
 
     var currentUser = Alloy.Globals.currentUser;
     var selUser = getModelFromSelectedRow(_event);
@@ -66,7 +66,7 @@ function followBtnClicked(_event) {
         } else {
             alert("Error trying to follow " + selUser.displayName);
         }
-        Alloy.Globals.hideIndicator();
+        Alloy.Globals.PW.hideIndicator();
 
         // update the lists IF it was successful
         _resp.success && updateFollowersFriendsLists(function() {
@@ -74,7 +74,7 @@ function followBtnClicked(_event) {
             // update the UI to reflect the change
             getAllUsersExceptFriends();
 
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
         });
 
     });
@@ -84,7 +84,7 @@ function followBtnClicked(_event) {
 
 function followingBtnClicked(_event) {
 
-    Alloy.Globals.showIndicator("Updating User");
+    Alloy.Globals.PW.showIndicator("Updating User");
 
     var currentUser = Alloy.Globals.currentUser;
     var selUser = getModelFromSelectedRow(_event);
@@ -95,7 +95,7 @@ function followingBtnClicked(_event) {
         } else {
             alert("Error unfollowing " + selUser.displayName);
         }
-        Alloy.Globals.hideIndicator();
+        Alloy.Globals.PW.hideIndicator();
 
         // update the lists
         _resp.success && updateFollowersFriendsLists(function() {
@@ -103,7 +103,7 @@ function followingBtnClicked(_event) {
             // update the UI to reflect the change
             loadFriends();
 
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
         });
     });
     _event.cancelBubble = true;
@@ -130,13 +130,13 @@ function filterClicked(_event) {
 function loadFriends(_callback) {
     var user = Alloy.Globals.currentUser;
 
-    Alloy.Globals.showIndicator("Loading Friends...");
+    Alloy.Globals.PW.showIndicator("Loading Friends...");
 
     user.getFriends(function(_resp) {
         if (_resp.success) {
             if (_resp.collection.models.length === 0) {
                 $.friendUserCollection.reset();
-                Alloy.Globals.hideIndicator();
+                Alloy.Globals.PW.hideIndicator();
                 return;
             }
             $.collectionType = "friends";
@@ -144,10 +144,10 @@ function loadFriends(_callback) {
             $.friendUserCollection.reset(_resp.collection.models);
             $.friendUserCollection.trigger("sync");
 
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
         } else {
             alert("Error loading followers");
-            Alloy.Globals.hideIndicator();
+            Alloy.Globals.PW.hideIndicator();
         }
     });
 };
@@ -216,10 +216,10 @@ function updateFollowersFriendsLists(_callback) {
 function initialize() {
     $.filter.index = 0;
 
-    Alloy.Globals.showIndicator("Loading...");
+    Alloy.Globals.PW.showIndicator("Loading...");
 
     updateFollowersFriendsLists(function() {
-        Alloy.Globals.hideIndicator();
+        Alloy.Globals.PW.hideIndicator();
 
         // get the users
         $.collectionType = "fullItem";
