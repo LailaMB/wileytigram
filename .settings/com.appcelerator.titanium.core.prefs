@@ -1,0 +1,13 @@
+eclipse.preferences.version=1
+provisioning_profiles/development/500C86C0-2AC1-4A9A-A966-6F5F7AC5642B/appid=com.tinjaw.*
+provisioning_profiles/development/500C86C0-2AC1-4A9A-A966-6F5F7AC5642B/name=For use during development
+provisioning_profiles/development/500C86C0-2AC1-4A9A-A966-6F5F7AC5642B/uuid=500C86C0-2AC1-4A9A-A966-6F5F7AC5642B
+provisioning_profiles/development/5325BE43-1218-438B-AE26-154E878C23CF/appid=com.tinjaw.iclouddemo
+provisioning_profiles/development/5325BE43-1218-438B-AE26-154E878C23CF/name=iOS Team Provisioning Profile\: com.tinjaw.iclouddemo
+provisioning_profiles/development/5325BE43-1218-438B-AE26-154E878C23CF/uuid=5325BE43-1218-438B-AE26-154E878C23CF
+provisioning_profiles/development/581B63CF-C452-4597-B2B3-18B1CF87B175/appid=*
+provisioning_profiles/development/581B63CF-C452-4597-B2B3-18B1CF87B175/name=iOS Team Provisioning Profile\: *
+provisioning_profiles/development/581B63CF-C452-4597-B2B3-18B1CF87B175/uuid=581B63CF-C452-4597-B2B3-18B1CF87B175
+provisioning_profiles/development/5A23BF0F-1395-4B71-874B-1480934242D3/appid=com.tinjaw.*
+provisioning_profiles/development/5A23BF0F-1395-4B71-874B-1480934242D3/name=iOS Team Provisioning Profile\: com.tinjaw.*
+provisioning_profiles/development/5A23BF0F-1395-4B71-874B-1480934242D3/uuid=5A23BF0F-1395-4B71-874B-1480934242D3
