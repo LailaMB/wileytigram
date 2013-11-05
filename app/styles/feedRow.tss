@@ -46,4 +46,7 @@
 	width: '30%',
 	height: '32dp'
 }
+"#locationButton[platform=android]" : {
+  height : '42dp'
+},
 
