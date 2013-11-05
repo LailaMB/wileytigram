@@ -213,7 +213,7 @@ function updateFollowersFriendsLists(_callback) {
     });
 }
 
-function initialize() {
+$.initialize = function initialize() {
     $.filter.index = 0;
 
     Alloy.Globals.PW.showIndicator("Loading...");
@@ -244,7 +244,3 @@ function androidBackEventHandler(_event) {
     $.friendsWindow.close();
 }
 
-
-$.getView().addEventListener("focus", function() {
-    initialize();
-});

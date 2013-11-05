@@ -50,21 +50,34 @@ function doOpen() {
         };
 
         activity.invalidateOptionsMenu();
-
-        // this forces the menu to update when the tab changes
-        $.tabGroup.addEventListener('blur', function(_event) {
-            $.getView().activity.invalidateOptionsMenu();
-        });
     }
+
 }
 
+// this forces the menu to update when the tab changes and to 
+// update the friends list when the friends tab is made active
+$.tabGroup.addEventListener('blur', function(_event) {
+    
+    // got blur event but tab did not change, just exit
+    if (_event.index === _event.previousIndex) {
+        return;
+    }
+    
+    // if android, update menus
+    OS_ANDROID && $.getView().activity.invalidateOptionsMenu();
+
+    // here we can update specific tabs when they get opened
+    if ( $.tabGroup.activeTab.title === "Friends") {
+        $.friendsController.initialize();
+    }
+});
 
 $.userLoggedInAction = function() {
     user.showMe(function(_response) {
         if (_response.success === true) {
             indexController.loginSuccessAction(_response);
         } else {
-            alert("Application Error\n " +_response.error.message);
+            alert("Application Error\n " + _response.error.message);
             Ti.API.error(JSON.stringify(_response.error, null, 2));
 
             // go ahead and do the login
@@ -128,18 +141,18 @@ if (user.authenticated() === true) {
 }
 
 /*
-// we are using the default administration account for now
-user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
-    if (_response.success) {
-        // open the main screen
-        $.tabGroup.open();
+ // we are using the default administration account for now
+ user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
+ if (_response.success) {
+ // open the main screen
+ $.tabGroup.open();
 
-        // pre-populate the feed with recent photos
-        $.feedController.initialize();
+ // pre-populate the feed with recent photos
+ $.feedController.initialize();
 
-    } else {
-        alert("Error Starting Application " + _response.error);
-        Ti.API.error('error logging in ' + _response.error);
-    }
-});
-*/
+ } else {
+ alert("Error Starting Application " + _response.error);
+ Ti.API.error('error logging in ' + _response.error);
+ }
+ });
+ */

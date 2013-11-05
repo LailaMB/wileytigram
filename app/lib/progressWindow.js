@@ -10,6 +10,10 @@ var progressIndicator = null;
  * @param {Object} messageString
  */
 exports.showIndicator = function(_messageString) {
+
+    if (activityIndicatorWindow || showingIndicator)
+        return;
+
     Ti.API.info('showIndicator: ' + _messageString);
 
     activityIndicatorWindow = Titanium.UI.createWindow({
@@ -30,7 +34,7 @@ exports.showIndicator = function(_messageString) {
         message : _messageString || "Loading, please wait.",
         color : "white",
         font : {
-            fontSize : 16,
+            fontSize : '16dp',
             fontWeight : "bold"
         },
         style : 0
@@ -52,24 +56,27 @@ exports.setProgressValue = function(e) {
 };
 
 exports.hideIndicator = function() {
+    try { debugger;
 
-    if (progressTimeout) {
-        clearTimeout(progressTimeout);
-        progressTimeout = null;
-    }
+        if (progressTimeout) {
+            clearTimeout(progressTimeout);
+            progressTimeout = null;
+        }
 
-    Ti.API.info('hideIndicator');
-    if (!showingIndicator) {
-        return;
-    }
-    activityIndicator.hide();
-    if (OS_IOS) {
-        activityIndicatorWindow.remove(activityIndicator);
+        Ti.API.info('hideIndicator, showingIndicator=' + showingIndicator);
+        if (!showingIndicator) {
+            return;
+        }
+
+        OS_IOS && activityIndicatorWindow.remove(activityIndicator);
+        activityIndicator && activityIndicator.hide();
         activityIndicatorWindow.close();
         activityIndicatorWindow = null;
-    }
 
-    // clean up variables
-    showingIndicator = false;
-    activityIndicator = null;
+        // clean up variables
+        showingIndicator = false;
+        activityIndicator = null;
+    } catch (EE) {
+        Ti.API.info('hideIndicator error: ' + JSON.stringify(EE));
+    }
 };
