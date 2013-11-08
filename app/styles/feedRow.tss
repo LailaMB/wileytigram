@@ -18,16 +18,26 @@
   height : '42dp'
 },
 "#commentButton" : {
-  width : '50%',
-  height : '32dp'
-},
-"#commentButton[platform=android]" : {
-  height : '42dp'
+	width: '30%',
+            left: '6dp',
+	height: '32dp'
 },
 "#shareButton" : {
-  width : '50%',
-  height : '32dp'
-},
+	left: '6dp',
+	width: '30%',
+	height: '32dp'
+}
+"#locationButton" : {
+	left: '6dp',
+	width: '30%',
+	height: '32dp'
+}
+"#commentButton[platform=android]" : {
+  height : '42dp'
+}, 
 "#shareButton[platform=android]" : {
+  height : '42dp'
+}, 
+"#locationButton[platform=android]" : {
   height : '42dp'
 }
