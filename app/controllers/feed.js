@@ -7,6 +7,7 @@ OS_IOS && $.cameraButton.addEventListener("click", function(_event) {
 	$.cameraButtonClicked(_event);
 });
 $.feedTable.addEventListener("click", processTableClicks);
+$.filter.addEventListener( OS_IOS ? 'click' : 'change', filterTabbedBarClicked);
 
 // EVENT HANDLERS
 /**
@@ -220,6 +221,100 @@ function processImage(_mediaObject, _callback) {
 			}
 		});
 	});
+}
+
+function filterTabbedBarClicked(_event) {
+	var itemSelected = OS_IOS ? _event.index : _event.rowIndex;
+	switch (itemSelected) {
+		case 0 :
+			// List View Display
+			$.mapview.visible = false;
+			$.feedTable.visible = true;
+			break;
+		case 1 :
+			// Map View Display
+			$.feedTable.visible = false;
+			$.mapview.visible = true;
+			showLocalImages();
+			break;
+	}
+}
+
+function showLocalImages() {
+	// create new photo collection
+	$.locationCollection = Alloy.createCollection('photo');
+
+	// find all photos within 5 miles of current location
+	$.locationCollection.findPhotosNearMe(Alloy.Globals.currentUser, 5, {
+		success : function(_collection, _response) {
+			Ti.API.info(JSON.stringify(_collection));
+
+			// add the annotations/map pins to map
+			if (_collection.models.length) {
+				addPhotosToMap(_collection);
+			} else {
+				alert("No Local Images Found");
+				filterTabbedBarClicked({
+					index : 0,
+					rowIndex : 0,
+				});
+
+				if (OS_ANDROID) {
+					$.filter.setSelectedRow(0, 0, false);
+				} else {
+					$.filter.setIndex(0);
+				}
+			}
+		},
+		error : function(error) {
+			alert('Error loading Feed ' + e.message);
+			Ti.API.error(JSON.stringify(error));
+		}
+	});
+}
+
+function addPhotosToMap(_collection) {
+	var annotationArray = [];
+	var lastLat;
+
+	// remove all annotations from map
+	$.mapview.removeAllAnnotations();
+
+	var annotationRightButton = function() {
+		var button = Ti.UI.createButton({
+			title : "X",
+		});
+		return button;
+	};
+
+	for (var i in _collection.models) {
+		var mapData = _collection.models[i].toJSON();
+		var coords = mapData.custom_fields.coordinates;
+		var annotation = Alloy.Globals.Map.createAnnotation({
+			latitude : Number(coords[0][1]),
+			longitude : Number(coords[0][0]),
+			subtitle : mapData.custom_fields.location_string,
+			title : mapData.title,
+			//animate : true,
+			data : _collection.models[i].clone()
+		});
+
+		if (OS_IOS) {
+			annotation.setPincolor(Alloy.Globals.Map.ANNOTATION_RED);
+			annotation.setRightButton(Titanium.UI.iPhone.SystemButton.DISCLOSURE);
+		} else {
+			annotation.setRightButton(annotationRightButton);
+		}
+		annotationArray.push(annotation);
+
+	}
+
+	// calculate the map region based on the annotations
+	var region = geo.calculateMapRegion(annotationArray);
+	$.mapview.setRegion(region);
+
+	// add the annotations to the map
+	$.mapview.setAnnotations(annotationArray);
 }
 
 /**
