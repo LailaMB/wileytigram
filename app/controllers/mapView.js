@@ -1,12 +1,5 @@
 var args = arguments[0] || {};
-
-// the android module is available in marketplace
-// Google Maps Android API v2 :
-//    https://marketplace.appcelerator.com/apps/5005?1002839494
-// Additional Documentation available here:
-//    http://docs.appcelerator.com/titanium/latest/#!/guide/Google_Maps_v2_for_Android
-
-var MapModule = Alloy.Globals.Map;
+var MapModule = Ti.Map;
 
 // get the photo object from the parameters
 var coords = args.photo.get("custom_fields").coordinates[0];

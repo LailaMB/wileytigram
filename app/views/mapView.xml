@@ -7,6 +7,6 @@
 				<Label id="location"></Label>
 			</View>
 		</View>
-		<View  ns="Alloy.Globals.Map" id="mapview" ></View>
+		<View ns="Ti.Map" id="mapview" ></View>
 	</Window>
 </Alloy>

@@ -21,6 +21,6 @@
 //
 // Alloy.Globals.someGlobalFunction = function(){};
 
-Alloy.Globals.Map = OS_ANDROID ? require('ti.map') : Ti.Map;
+//Alloy.Globals.Map = Ti.Android ? require('ti.map') : Ti.Map;
 
 Alloy.Globals.PW = require('progressWindow');
