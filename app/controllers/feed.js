@@ -8,6 +8,7 @@ OS_IOS && $.cameraButton.addEventListener("click", function(_event) {
 });
 $.feedTable.addEventListener("click", processTableClicks);
 $.filter.addEventListener( OS_IOS ? 'click' : 'change', filterTabbedBarClicked);
+$.mapview.addEventListener('click', mapAnnotationClicked);
 
 // EVENT HANDLERS
 /**
@@ -141,7 +142,8 @@ function processTableClicks(_event) { debugger;
 function handleLocationButtonClicked(_event) {
 
 	var collection = Alloy.Collections.instance("Photo");
-	var model = collection.get(_event.row.row_id); debugger;
+	var model = collection.get(_event.row.row_id);
+	debugger;
 
 	var customFields = model.get("custom_fields");
 
@@ -159,23 +161,27 @@ function handleLocationButtonClicked(_event) {
 }
 
 function handleCommentButtonClicked(_event) {
-	var collection = Alloy.Collections.instance("Photo");
-	var model = collection.get(_event.row.row_id);
 
-	var controller = Alloy.createController("comment", {
+	var collection, model;
+
+	if (!_event.row) {
+		model = _event.data;
+	} else {
+		collection = Alloy.Collections.instance("Photo");
+		model = collection.get(_event.row.row_id);
+	}
+
+	var commentController = Alloy.createController("comment", {
 		photo : model,
 		parentController : $
 	});
 
-	// initialize the data in the view, load content
-	controller.initialize();
+	// initialize the data in the view
+	commentController.initialize();
 
 	// open the view
-	if (OS_IOS) {
-		Alloy.Globals.openCurrentTabWindow(controller.getView());
-	} else {
-		controller.getView().open();
-	}
+	Alloy.Globals.openCurrentTabWindow(commentController.getView());
+
 }
 
 function processImage(_mediaObject, _callback) {
@@ -316,6 +322,28 @@ function addPhotosToMap(_collection) {
 	// add the annotations to the map
 	$.mapview.setAnnotations(annotationArray);
 }
+
+function mapAnnotationClicked(_event) {
+	// get event properties
+	var annotation = _event.annotation;
+	//get the Myid from annotation
+	var clickSource = _event.clicksource;
+
+	// Check if 'rightButton' clicked
+	if (clickSource === 'rightButton') {
+
+		// load the mapDetail controller
+		var mapDetailCtrl = Alloy.createController('mapDetail', {
+			photo : annotation.data,
+			parentController : $,
+			clickHandler : processTableClicks
+		});
+
+		// open the view
+		Alloy.Globals.openCurrentTabWindow(mapDetailCtrl.getView());
+
+	}
+};
 
 /**
  *

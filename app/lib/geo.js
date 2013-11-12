@@ -49,3 +49,36 @@ exports.getCurrentLocation = function(_callback) {
         }
     });
 };
+
+exports.calculateMapRegion = function(_annotations) {
+    var latMax, latMin, lngMax, lngMin;
+
+    for (var c = 0; c < _annotations.length; c++) {
+
+        var latitude = _annotations[c].latitude;
+        var longitude = _annotations[c].longitude;
+
+        latMax = Math.max(latMax || latitude, latitude);
+        latMin = Math.min(latMin || latitude, latitude);
+
+        lngMax = Math.max(lngMax || longitude, longitude);
+        lngMin = Math.min(lngMin || longitude, longitude);
+
+    }
+
+    //create the map boundary area values
+    var bndLat = (latMax + latMin) / 2;
+    var bndLng = (lngMax + lngMin) / 2;
+
+    var bndLatDelta = latMax - latMin + 0.01;
+    var bndLngDelta = lngMax - lngMin + 0.01;
+
+    //create the map region definition for the boundaries containing the sites
+    return mapRegionSites = {
+        latitude : bndLat,
+        longitude : bndLng,
+        animate : true,
+        latitudeDelta : bndLatDelta,
+        longitudeDelta : bndLngDelta
+    };
+};
