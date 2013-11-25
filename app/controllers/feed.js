@@ -1,5 +1,6 @@
 // load Geolocation library
 var geo = require("geo");
+var sharing = require("sharing");
 
 // EVENT LISTENERS
 // there will only be a camera button on IOS
@@ -135,15 +136,14 @@ function processTableClicks(_event) { debugger;
 	} else if (_event.source.id === "locationButton") {
 		handleLocationButtonClicked(_event);
 	} else if (_event.source.id === "shareButton") {
-		alert('Will do this later!!');
+		handleShareButtonClicked(_event);
 	}
 }
 
 function handleLocationButtonClicked(_event) {
 
 	var collection = Alloy.Collections.instance("Photo");
-	var model = collection.get(_event.row.row_id);
-	debugger;
+	var model = collection.get(_event.row.row_id); debugger;
 
 	var customFields = model.get("custom_fields");
 
@@ -182,6 +182,22 @@ function handleCommentButtonClicked(_event) {
 	// open the view
 	Alloy.Globals.openCurrentTabWindow(commentController.getView());
 
+}
+
+function handleShareButtonClicked(_event) {
+	var collection, model;
+
+	if (!_event.row) {
+		model = _event.data;
+	} else {
+		collection = Alloy.Collections.instance("Photo");
+		model = collection.get(_event.row.row_id);
+	}
+
+	// commonjs library for sharing
+	sharing.sharingOptions({
+		model : model
+	});
 }
 
 function processImage(_mediaObject, _callback) {
