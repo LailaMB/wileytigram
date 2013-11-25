@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<ti:app xmlns:ti="http://ti.appcelerator.org">
+<?xml version="1.0" encoding="UTF-8"?><ti:app xmlns:ti="http://ti.appcelerator.org">
     <property name="acs-oauth-secret-production" type="string">VjVkdwZBylVV4IHXfzAGEYbO7wZUn7qg</property>
     <property name="acs-oauth-key-production" type="string">IW93QWGzvy2tdKAsMa4sSSEtqLFaQIOu</property>
     <property name="acs-api-key-production" type="string">Zi9e8dR4foe9X1NeorXVaXDKN0GGVrnz</property>
@@ -24,6 +23,8 @@
     <guid>9187e8a7-ab06-4981-b6c6-23b6af769d58</guid>
     <property name="ti.ui.defaultunit" type="string">system</property>
     <property name="ti.facebook.appid">304717069667389</property>
+    <property name="twitter.consumerKey">Hj99WMhjA41ZSjMtdpAPLw</property>
+	<property name="twitter.consumerSecret">TS938j4VzgcHr3hBe5aX0nTd2EvbB8sPJJOkmqs</property>
     <iphone>
         <orientations device="iphone">
             <orientation>Ti.UI.PORTRAIT</orientation>

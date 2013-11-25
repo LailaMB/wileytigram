@@ -9,6 +9,20 @@ if (!Alloy.Globals.FB) {
 	Alloy.Globals.FB.appid = Ti.App.Properties.getString("ti.facebook.appid");
 }
 
+// if twitter is not loaded/initialized
+if (!Alloy.Globals.TW) {
+    var social = require('social');
+
+    // Create a Twitter client for this module
+              var TAP = Ti.App.Properties;
+    Alloy.Globals.TW = social.create({
+        consumerSecret :TAP.getString('twitter.consumerSecret'),
+        consumerKey : TAP.getString('twitter.consumerKey')
+    });
+
+}
+
+
 // variables for the progress indicators
 var progressIndicatorWindow = null;
 var showingIndicator = false;
@@ -17,8 +31,8 @@ var progressIndicator = null;
 exports.sharingOptions = function(_options) {
 
 	var dialog = Titanium.UI.createOptionDialog({
-		options : ['FB Feed', 'FB Photo', 'Email', 'Cancel'],
-		cancel : 3,
+		options : ['FB Feed', 'FB Photo', 'Twitter', 'Email', 'Cancel'],
+		cancel : 4,
 		title : 'Share Photo'
 	});
 
@@ -33,6 +47,8 @@ exports.sharingOptions = function(_options) {
 			prepForFacebookShare(function() {
 				shareFacebookPhoto(_options.model);
 			});
+		} else if (e.index === 2) {
+            shareTwitterPhoto(_options.model);
 		} else {
 			shareWithEmailDialog(_options.model);
 		}
@@ -203,3 +219,76 @@ function shareFacebookPhoto(_model) {
         });
     });
 };
+
+function shareWithEmailDialog(_model) {
+
+    var dataModel = _model.attributes;
+
+    var emailDialog = Ti.UI.createEmailDialog({
+        html : true
+    });
+
+    if (emailDialog.isSupported() === false) {
+        alert("Email is not configured for this device");
+        return;
+    }
+
+    emailDialog.subject = " Wiley ACS & Alloy Sample App";
+    emailDialog.messageBody = '<html>' + dataModel.title +'<br/>';
+    emailDialog.messageBody +='<a href="' +dataModel.urls.original;
+    emailDialog.messageBody += '">Link to original image</a>';
+    emailDialog.messageBody += '</html>';
+
+    downloadFile(_model.attributes.urls.original, "temp.jpeg",   
+        function(_data) {
+
+        if (_data.success === false) {
+            alert("Error downloading file\n Image not shared!");
+            return;
+        }
+
+        var f = Ti.Filesystem.getFile(_data.nativePath);
+        emailDialog.addAttachment(f);
+
+        emailDialog.addEventListener("complete", function(_event) {
+            if (e.result === emailDialog.SENT) {
+                alert('Message Successfully Sent!');
+            }
+        });
+
+        emailDialog.open();
+
+    });
+};
+
+function shareTwitterPhoto(_model) {
+    var dataModel = _model.attributes;
+
+    var twitter = Alloy.Globals.TW;
+
+    downloadFile(dataModel.urls.iphone, null, function(_data) {
+
+        if (_data.success === false) {
+            alert("error downloading file");
+            return;
+        }
+        twitter.shareImage({
+            message : dataModel.title + " #tialloy",
+            image : _data.blob,
+            success : function() {
+                Ti.UI.createAlertDialog({
+                    title : 'Sample Alloy & ACS App',
+                    message : "Tweeted successfully!",
+                    buttonNames : ['OK']
+                }).show();
+            },
+            error : function() {
+                Ti.UI.createAlertDialog({
+                    title : 'Sample Alloy & ACS App',
+                    message : 'Unable to post your tweet.',
+                    buttonNames : ['OK']
+                }).show();
+            }
+        });
+    });
+}
