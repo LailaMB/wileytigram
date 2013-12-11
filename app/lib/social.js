@@ -575,7 +575,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod) {
 	    var pSuccessMessage = options.onSuccess;
 	    var pErrorMessage = options.onError;
 	    if (accessToken == null || accessTokenSecret == null) {
-	        Ti.API.debug("The client doesn't have an access token”);
+	        Ti.API.debug("The client doesn't have an access token");
 	        return;
 	    }
 	    accessor.tokenSecret = accessTokenSecret;
