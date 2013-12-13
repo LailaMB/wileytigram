@@ -3,3 +3,4 @@ build/
 build.log
 Resources
 *.pyc
+com.appcelerator.titanium.core.prefs

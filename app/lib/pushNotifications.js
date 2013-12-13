@@ -1,0 +1,137 @@
+var Cloud = require('ti.cloud');
+var AndroidPush = OS_ANDROID ? require('ti.cloudpush') : null;
+
+exports.initialize = function(_user, _pushRcvCallback, _callback) {
+
+	if (Ti.Platform.model === 'Simulator') {
+		alert("Push ONLY works on Devices!");
+		return;
+	}
+
+	// only register push if we have a user logged in
+	if (_user.get("id")) {
+
+		if (OS_ANDROID) {
+			// ANDROID SPECIFIC CODE GOES HERE
+			// reset any settings
+			AndroidPush.clearStatus();
+
+			// set some properties
+			AndroidPush.debug = true;
+			AndroidPush.showTrayNotificationsWhenFocused = true;
+
+			AndroidPush.retrieveDeviceToken({
+				success : function(_data) {
+					Ti.API.debug("recieved device token", _data.deviceToken);
+
+					// what to call when push is received
+					AndroidPush.addEventListener('callback', _pushRcvCallback);
+
+					// set some more properties
+					AndroidPush.enabled = true;
+					AndroidPush.focusAppOnPush = false;
+
+					pushRegisterSuccess(_data, _callback);
+				},
+				error : function(_data) {
+					AndroidPush.enabled = false;
+					AndroidPush.focusAppOnPush = false;
+					AndroidPush.removeEventListener('callback', _pushRcvCallback);
+
+					pushRegisterError(_data, _callback);
+				}
+			});
+
+		} else {
+			Ti.Network.registerForPushNotifications({
+				types : [Ti.Network.NOTIFICATION_TYPE_BADGE, Ti.Network.NOTIFICATION_TYPE_ALERT, Ti.Network.NOTIFICATION_TYPE_SOUND],
+				success : function(_data) {
+					pushRegisterSuccess(_data, _callback);
+				},
+				error : function(_data) {
+					pushRegisterError(_data, _callback);
+				},
+				callback : function(_data) {
+					// what to call when push is recieved
+					_pushRcvCallback(_data.data);
+				}
+			});
+		}
+	} else {
+		_callback && _callback({
+			success : false,
+			msg : 'Must have User for Push Notifications',
+		});
+	}
+};
+
+exports.subscribe = function(_channel, _token, _callback) {
+    Cloud.PushNotifications.subscribe({
+        channel : _channel,
+        device_token : _token,
+        type : OS_IOS ? 'ios' : 'gcm'
+    }, function(_event) {
+
+        var msgStr = "Subscribed to " + _channel + " Channel";
+        Ti.API.debug(msgStr + ': ' + _event.success);
+
+        if (_event.success) {
+            _callback({
+                success : true,
+                error : null,
+                msg : msgStr
+            });
+
+        } else {
+            _callback({
+                success : false,
+                error : _event.data,
+                msg : "Error Subscribing to All Channels"
+            });
+        }
+    });
+};
+
+
+function pushRegisterError(_data, _callback) {
+    _callback && _callback({
+        success : false,
+        error : _data
+    });
+}
+
+function pushRegisterSuccess(_data, _callback) {
+
+    var token = _data.deviceToken;
+
+    exports.subscribe("friends", token, function(_resp1) {
+
+        // if successful subscribe to the platform specific channel
+        if (_resp1.success) {
+            var channel = OS_IOS ? 'IOS' : 'ANDROID';
+            exports.subscribe(channel, token, function(_resp2) {
+                if (_resp2.success) {
+                    _callback({
+                        success : true,
+                        msg : "Subscribe to channel: " + channel,
+                        data : _data,
+                    });
+                } else {
+                    _callback({
+                        success : false,
+                        error : _resp2.data,
+                        msg : "Error Subscribing to channel:"+
+                                                          channel
+                    });
+                }
+            });
+        } else {
+            // if not then return error and false success flag
+            _callback({
+                success : false,
+                error : _resp1s.data,
+                msg : "Error Subscribing to All Channels"
+            });
+        }
+    });
+}
