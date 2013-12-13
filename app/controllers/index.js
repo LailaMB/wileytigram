@@ -74,7 +74,7 @@ $.userLoggedInAction = function() {
 };
 
 $.loginSuccessAction = function(_options) {
-	initializePushNotifications();
+	initializePushNotifications(_options.model);
 
     Ti.API.info('logged in user information');
     Ti.API.info(JSON.stringify(_options.model, null, 2));
