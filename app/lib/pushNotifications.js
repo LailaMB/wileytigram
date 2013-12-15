@@ -92,6 +92,44 @@ exports.subscribe = function(_channel, _token, _callback) {
     });
 };
 
+exports.sendPush = function(_params, _callback) { debugger;
+
+    if (Alloy.Globals.pushToken === null) {
+        _callback({
+            success : false,
+            error : "Device Not Registered For Notifications!"
+        });
+        return;
+    }
+
+    // set the default parameters, send to
+    // user subscribed to friends channel
+    var data = {
+        channel : 'friends',
+        payload : _params.payload,
+    };
+
+    // add optional parameter to determine if should be sent to all
+    // friends or to a specific friend
+    _params.friends && (data.friends = _params.friends);
+    _params.to_ids && (data.to_ids = _params.to_ids);
+
+    Cloud.PushNotifications.notify(data, function(e) {
+        if (e.success) {
+            // it worked
+            _callback({
+                success : true
+            });
+        } else {
+            var eStr=(e.error && e.message)|| JSON.stringify(e);
+            Ti.API.error(eStr);
+            _callback({
+                success : false,
+                error : eStr
+            });
+        }
+    });
+};
 
 function pushRegisterError(_data, _callback) {
     _callback && _callback({
