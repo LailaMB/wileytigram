@@ -3,6 +3,7 @@ var parameters = arguments[0] || {};
 var currentPhoto = parameters.photo || {};
 var parentController = parameters.parentController || {};
 var comments = Alloy.Collections.instance("Comment");
+var push = require('pushNotifications');
 
 OS_IOS && $.newCommentButton.addEventListener("click", handleNewCommentButtonClicked);
 $.commentTable.addEventListener("delete", handleDeleteRow);
@@ -82,6 +83,34 @@ function addComment(_content, _callback) {
             } else {
                 $.commentTable.insertRowBefore(0, row.getView(), true);
             }
+            // send a push notification to the user whose photo
+            // this is to let them know you commented on photo
+            var currentUser = Alloy.Globals.currentUser;
+
+            push.sendPush({
+                payload : {
+                    custom : {
+                        from : currentUser.get("id"),
+                        commentedOn : currentPhoto.id,
+                        commentedId : _model.id,
+                    },
+                    sound : "default",
+                    alert : "New comment posted by " + currentUser.get("email")
+                },
+                to_ids : currentPhoto.get("user").id
+            }, function(_repsonsePush) {
+                if (_repsonsePush.success) {
+                    alert("Notified user of new comment");
+                } else {
+                    alert("Error notifying user of new comment");
+                }
+
+                _callback && _callback({
+                    success : true,
+                    model : _response.model
+                });
+            });
+
         },
         error : function(e) {
             Ti.API.error('error: ' + e.message);
