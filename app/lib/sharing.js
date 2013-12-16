@@ -282,10 +282,11 @@ function shareTwitterPhoto(_model) {
                     buttonNames : ['OK']
                 }).show();
             },
-            error : function() {
+            error : function(_response) {
+                var error = JSON.parse(_response).error;
                 Ti.UI.createAlertDialog({
                     title : 'Sample Alloy & ACS App',
-                    message : 'Unable to post your tweet.',
+                    message : 'Unable to post your tweet.\n' + error,
                     buttonNames : ['OK']
                 }).show();
             }
