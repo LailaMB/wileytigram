@@ -30,7 +30,7 @@ exports.showIndicator = function(_messageString) {
         message : _messageString || "Loading, please wait.",
         color : "white",
         font : {
-            fontSize : 16,
+            fontSize : '16dp',
             fontWeight : "bold"
         },
         style : 0
@@ -63,11 +63,9 @@ exports.hideIndicator = function() {
         return;
     }
     activityIndicator.hide();
-    if (OS_IOS) {
-        activityIndicatorWindow.remove(activityIndicator);
-        activityIndicatorWindow.close();
-        activityIndicatorWindow = null;
-    }
+    activityIndicatorWindow.remove(activityIndicator);
+    activityIndicatorWindow.close();
+    activityIndicatorWindow = null;
 
     // clean up variables
     showingIndicator = false;
