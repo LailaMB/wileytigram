@@ -246,5 +246,6 @@ function androidBackEventHandler(_event) {
 
 
 $.getView().addEventListener("focus", function() {
-    initialize();
+    !$.initialized && initialize();
+    $.initialized = true;
 });
