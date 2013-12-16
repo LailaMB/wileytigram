@@ -66,110 +66,151 @@ exports.initialize = function(_user, _pushRcvCallback, _callback) {
 };
 
 exports.subscribe = function(_channel, _token, _callback) {
-    Cloud.PushNotifications.subscribe({
-        channel : _channel,
-        device_token : _token,
-        type : OS_IOS ? 'ios' : 'gcm'
-    }, function(_event) {
+	Cloud.PushNotifications.subscribe({
+		channel : _channel,
+		device_token : _token,
+		type : OS_IOS ? 'ios' : 'gcm'
+	}, function(_event) {
 
-        var msgStr = "Subscribed to " + _channel + " Channel";
-        Ti.API.debug(msgStr + ': ' + _event.success);
+		var msgStr = "Subscribed to " + _channel + " Channel";
+		Ti.API.debug(msgStr + ': ' + _event.success);
 
-        if (_event.success) {
-            _callback({
-                success : true,
-                error : null,
-                msg : msgStr
-            });
+		if (_event.success) {
+			_callback({
+				success : true,
+				error : null,
+				msg : msgStr
+			});
 
-        } else {
-            _callback({
-                success : false,
-                error : _event.data,
-                msg : "Error Subscribing to All Channels"
-            });
-        }
-    });
+		} else {
+			_callback({
+				success : false,
+				error : _event.data,
+				msg : "Error Subscribing to All Channels"
+			});
+		}
+	});
 };
 
 exports.sendPush = function(_params, _callback) { debugger;
 
-    if (Alloy.Globals.pushToken === null) {
-        _callback({
-            success : false,
-            error : "Device Not Registered For Notifications!"
-        });
-        return;
-    }
+	if (Alloy.Globals.pushToken === null) {
+		_callback({
+			success : false,
+			error : "Device Not Registered For Notifications!"
+		});
+		return;
+	}
 
-    // set the default parameters, send to
-    // user subscribed to friends channel
-    var data = {
-        channel : 'friends',
-        payload : _params.payload,
-    };
+	// set the default parameters, send to
+	// user subscribed to friends channel
+	var data = {
+		channel : 'friends',
+		payload : _params.payload,
+	};
 
-    // add optional parameter to determine if should be sent to all
-    // friends or to a specific friend
-    _params.friends && (data.friends = _params.friends);
-    _params.to_ids && (data.to_ids = _params.to_ids);
+	// add optional parameter to determine if should be sent to all
+	// friends or to a specific friend
+	_params.friends && (data.friends = _params.friends);
+	_params.to_ids && (data.to_ids = _params.to_ids);
 
-    Cloud.PushNotifications.notify(data, function(e) {
-        if (e.success) {
-            // it worked
-            _callback({
-                success : true
-            });
-        } else {
-            var eStr=(e.error && e.message)|| JSON.stringify(e);
-            Ti.API.error(eStr);
-            _callback({
-                success : false,
-                error : eStr
-            });
-        }
-    });
+	Cloud.PushNotifications.notify(data, function(e) {
+		if (e.success) {
+			// it worked
+			_callback({
+				success : true
+			});
+		} else {
+			var eStr = (e.error && e.message) || JSON.stringify(e);
+			Ti.API.error(eStr);
+			_callback({
+				success : false,
+				error : eStr
+			});
+		}
+	});
+};
+
+exports.pushUnsubscribe = function(_data, _callback) {
+
+	Cloud.PushNotifications.unsubscribe(_data, function(e) {
+		if (e.success) {
+			Ti.API.debug('Unsubscribed from: ' + _data.channel);
+			_callback({
+				success : true,
+				error : null
+			});
+		} else {
+			Ti.API.error('Error unsubscribing: ' + _data.channel);
+			Ti.API.error(JSON.stringify(e, null, 2));
+			_callback({
+				success : false,
+				error : e
+			});
+		}
+	});
+};
+
+exports.logout = function(_callback) {
+	exports.pushUnsubscribe({
+		channel : OS_IOS ? 'IOS' : 'ANDROID',
+		device_token : Alloy.Globals.pushToken
+	}, function(_response) {
+
+		if (_response.success === false) {
+			alert("error logging out, notification platform channel");
+		}
+		exports.pushUnsubscribe({
+			channel : 'friends',
+			device_token : Alloy.Globals.pushToken
+		}, function() {
+
+			if (_response.success === false) {
+				alert("error logging out, notification Friends channel");
+			}
+			_callback();
+		});
+	});
 };
 
 function pushRegisterError(_data, _callback) {
-    _callback && _callback({
-        success : false,
-        error : _data
-    });
+	_callback && _callback({
+		success : false,
+		error : _data
+	});
 }
 
 function pushRegisterSuccess(_data, _callback) {
 
-    var token = _data.deviceToken;
+	var token = _data.deviceToken;
 
-    exports.subscribe("friends", token, function(_resp1) {
+	exports.subscribe("friends", token, function(_resp1) {
 
-        // if successful subscribe to the platform specific channel
-        if (_resp1.success) {
-            var channel = OS_IOS ? 'IOS' : 'ANDROID';
-            exports.subscribe(channel, token, function(_resp2) {
-                if (_resp2.success) {
-                    _callback({
-                        success : true,
-                        msg : "Subscribe to channel: " + channel,
-                        data : _data,
-                    });
-                } else {
-                    _callback({
-                        success : false,
-                        error : _resp2.data,
-                        msg : "Error Subscribing to channel:"+
-                                                          channel
-                    });
-                }
-            });
-        } else {
-            // if not then return error and false success flag
-            _callback({
-                success : false,
-                error : _resp1s.data,
-                msg : "Error Subscribing to All Channels"
-            });
-        }
-    });
+		// if successful subscribe to the platform specific channel
+		if (_resp1.success) {
+			var channel = OS_IOS ? 'IOS' : 'ANDROID';
+			exports.subscribe(channel, token, function(_resp2) {
+				if (_resp2.success) {
+					_callback({
+						success : true,
+						msg : "Subscribe to channel: " + channel,
+						data : _data,
+					});
+				} else {
+					_callback({
+						success : false,
+						error : _resp2.data,
+						msg : "Error Subscribing to channel:" + channel
+					});
+				}
+			});
+		} else {
+			// if not then return error and false success flag
+			_callback({
+				success : false,
+				error : _resp1s.data,
+				msg : "Error Subscribing to All Channels"
+			});
+		}
+	});
 }
