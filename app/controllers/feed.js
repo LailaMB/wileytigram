@@ -66,22 +66,33 @@ $.cameraButtonClicked = function(_event) {
  * this is where the image is prepped for being saved to ACS
  */
 function processImage(_mediaObject, _callback) {
-    var parameters = {
-        "photo" : _mediaObject,
-        "title" : "Sample Photo " + new Date(),
-        "photo_sizes[preview]" : "200x200#",
-        "photo_sizes[iphone]" : "320x320#",
-        // We need this since we are showing the image immediately
-        "photo_sync_sizes[]" : "preview"
-    };
 
-    var photo = Alloy.createModel('Photo', parameters);
+    geo.getCurrentLocation(function(_coords) {
 
-    photo.save({}, {
-        success : function(_model, _response) {
-            Ti.API.info('success: ' + _model.toJSON());
-            // get all of my friends/followers
-            currentUser.getFollowers(function(_resp) {
+        var parameters = {
+            "photo" : _mediaObject,
+            "title" : "Sample Photo " + new Date(),
+            "photo_sizes[preview]" : "200x200#",
+            "photo_sizes[iphone]" : "320x320#",
+            // Since we are showing the image immediately
+            "photo_sync_sizes[]" : "preview",
+        };
+
+        // if we got a location, then set it
+        if (_coords) {
+            parameters.custom_fields = {
+                coordinates : [_coords.coords.longitude, _coords.coords.latitude],
+                location_string : _coords.title
+            };
+        }
+
+        var photo = Alloy.createModel('Photo', parameters);
+
+        photo.save({}, {
+
+            success : function(_model, _response) {
+                Ti.API.debug('success: ' + _model.toJSON());
+                            currentUser.getFollowers(function(_resp) {
                 if (_resp.success) {
                     $.followersList = _.pluck(_resp.collection.models, "id");
 
@@ -110,23 +121,22 @@ function processImage(_mediaObject, _callback) {
                     _callback();
                 }
             });
-
-            _callback({
-                model : _model,
-                message : null,
-                success : true
-            });
-        },
-        error : function(e) { debugger;
-            Ti.API.error('error: ' + e.message);
-            _callback({
-                model : parameters,
-                message : e.message,
-                success : false
-            });
-        }
+                _callback({
+                    model : _model,
+                    message : null,
+                    success : true
+                });
+            },
+            error : function(e) { debugger;
+                Ti.API.error('error: ' + e.message);
+                _callback({
+                    model : parameters,
+                    message : e.message,
+                    success : false
+                });
+            }
+        });
     });
-
 }
 
 function loadPhotos() {
@@ -233,50 +243,7 @@ function handleShareButtonClicked(_event) {
     });
 }
 
-function processImage(_mediaObject, _callback) {
 
-    geo.getCurrentLocation(function(_coords) {
-
-        var parameters = {
-            "photo" : _mediaObject,
-            "title" : "Sample Photo " + new Date(),
-            "photo_sizes[preview]" : "200x200#",
-            "photo_sizes[iphone]" : "320x320#",
-            // Since we are showing the image immediately
-            "photo_sync_sizes[]" : "preview",
-        };
-
-        // if we got a location, then set it
-        if (_coords) {
-            parameters.custom_fields = {
-                coordinates : [_coords.coords.longitude, _coords.coords.latitude],
-                location_string : _coords.title
-            };
-        }
-
-        var photo = Alloy.createModel('Photo', parameters);
-
-        photo.save({}, {
-
-            success : function(_model, _response) {
-                Ti.API.debug('success: ' + _model.toJSON());
-                _callback({
-                    model : _model,
-                    message : null,
-                    success : true
-                });
-            },
-            error : function(e) { debugger;
-                Ti.API.error('error: ' + e.message);
-                _callback({
-                    model : parameters,
-                    message : e.message,
-                    success : false
-                });
-            }
-        });
-    });
-}
 
 function filterTabbedBarClicked(_event) {
     var itemSelected = OS_IOS ? _event.index : _event.rowIndex;
