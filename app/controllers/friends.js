@@ -1,3 +1,5 @@
+var push = require('pushNotifications');
+
 // EVENT LISTENERS
 // on android, we need the change event not the click event
 $.filter.addEventListener( OS_ANDROID ? 'change' : 'click', filterClicked);
@@ -59,10 +61,26 @@ function followBtnClicked(_event) {
 
     var currentUser = Alloy.Globals.currentUser;
     var selUser = getModelFromSelectedRow(_event);
+    var newFriendName, user;
 
     currentUser.followUser(selUser.model.id, function(_resp) {
         if (_resp.success) {
             alert("You are now following " + selUser.displayName);
+
+            // send a push notification to the user to let
+            // them know they have a new friend
+            user = currentUser.toJSON();
+            Ti.API.info('currentUser: ' + user);
+            newFriendName = user.username ||user.email || ((user.first_name || "") + " " + (user.last_name || ""));
+            push.sendPush({
+                payload : "You have a new friend! " + newFriendName,
+                to_ids : selUser.model.id,
+            }, function(_repsonsePush) {
+                if (!_repsonsePush.success) {
+                    alert("Error notifying user of friend");
+                }
+            });
+
         } else {
             alert("Error trying to follow " + selUser.displayName);
         }
