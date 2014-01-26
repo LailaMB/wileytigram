@@ -165,7 +165,7 @@ function loadPhotos() {
             $.feedTable.data = rows;
         },
         error : function(error) {
-            alert('Error loading Feed ' + e.message);
+            alert('Error loading Feed ' + error.message);
             Ti.API.error(JSON.stringify(error));
         }
     });
@@ -289,7 +289,7 @@ function showLocalImages() {
             }
         },
         error : function(error) {
-            alert('Error loading Feed ' + e.message);
+            alert('Error loading Feed ' + error.message);
             Ti.API.error(JSON.stringify(error));
         }
     });
