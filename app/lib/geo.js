@@ -44,7 +44,7 @@ exports.getCurrentLocation = function(_callback) {
                 }, null);
             });
         } else {
-            alert('Location Services an Error');
+            alert('Location Services Error: ' + _location.error);
             _callback(null, _location.error);
         }
     });
