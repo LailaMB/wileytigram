@@ -1,7 +1,25 @@
 <Alloy>
-    <Tab title="Settings">
-        <Window title="Settings">
-            <Label>This is a Settings tab</Label>
+    <Tab title='Settings'>
+        <Window title='Settings'>
+            <RightNavButton platform='ios'>
+                <Button id='logoutBtn'>Logout</Button>
+            </RightNavButton>
+            <View id='header'>
+                <ImageView id='profileImage'></ImageView>
+                <View id='statsBox'>
+                    <Label id='fullname' class='left4dp top10dp'></Label>
+                    <View class='left4dp'>
+                        <Label class='hdrLabel'>Photos:</Label>
+                        <Label class='hdrCount left4dp' id='photoCount'>0</Label>
+                    </View>
+                    <View class='left4dp bottom10dp'>
+                        <Label class='hdrLabel'>Friends:</Label>
+                        <Label class='hdrCount left4dp' id='friendCount'>0</Label>
+                    </View>
+                </View>
+            </View>
+            <View id='mainBody'></View>
+            <Button id='refreshBtn'></Button>
         </Window>
     </Tab>
 </Alloy>
