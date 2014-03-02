@@ -28,6 +28,15 @@ var progressIndicatorWindow = null;
 var showingIndicator = false;
 var progressIndicator = null;
 
+
+/**
+ * logs out and clears out any social media information
+ */
+exports.deauthorize = function() {
+    Alloy.Globals.TW && Alloy.Globals.TW.deauthorize();
+    Alloy.Globals.FB && Alloy.Globals.FB.logout();
+};
+
 exports.sharingOptions = function(_options) {
 
 	var dialog = Titanium.UI.createOptionDialog({

@@ -32,7 +32,15 @@ function doOpen() {
             Ti.API.info('IN activity.onCreateOptionsMenu');
             Ti.API.info('Active Tab: ' + $.tabGroup.activeTab.title);
 
-            if ($.tabGroup.activeTab.title === "Feed") {
+            if ($.tabGroup.activeTab.title === "Settings") {
+                menuItem = e.menu.add({
+                    title : "Logout",
+                    showAsAction : Ti.Android.SHOW_AS_ACTION_ALWAYS,
+                });
+                menuItem.addEventListener("click", function(e) {
+                    $.settingsController.handleLogoutMenuClick();
+                });
+            } else if ($.tabGroup.activeTab.title === "Feed") {
 
                 menuItem = e.menu.add({
                     //itemId : "PHOTO",
@@ -58,13 +66,12 @@ function doOpen() {
     }
 }
 
-
 $.userLoggedInAction = function() {
     user.showMe(function(_response) {
         if (_response.success === true) {
             indexController.loginSuccessAction(_response);
         } else {
-            alert("Application Error\n " +_response.error.message);
+            alert("Application Error\n " + _response.error.message);
             Ti.API.error(JSON.stringify(_response.error, null, 2));
 
             // go ahead and do the login
@@ -74,7 +81,7 @@ $.userLoggedInAction = function() {
 };
 
 $.loginSuccessAction = function(_options) {
-	initializePushNotifications(_options.model);
+    initializePushNotifications(_options.model);
 
     Ti.API.info('logged in user information');
     Ti.API.info(JSON.stringify(_options.model, null, 2));
@@ -129,21 +136,21 @@ if (user.authenticated() === true) {
 }
 
 /*
-// we are using the default administration account for now
-user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
-    if (_response.success) {
-        // open the main screen
-        $.tabGroup.open();
+ // we are using the default administration account for now
+ user.login("wileytigram_admin", "wileytigram_admin", function(_response) {
+ if (_response.success) {
+ // open the main screen
+ $.tabGroup.open();
 
-        // pre-populate the feed with recent photos
-        $.feedController.initialize();
+ // pre-populate the feed with recent photos
+ $.feedController.initialize();
 
-    } else {
-        alert("Error Starting Application " + _response.error);
-        Ti.API.error('error logging in ' + _response.error);
-    }
-});
-*/
+ } else {
+ alert("Error Starting Application " + _response.error);
+ Ti.API.error('error logging in ' + _response.error);
+ }
+ });
+ */
 
 function initializePushNotifications(_user) {
 
@@ -151,7 +158,7 @@ function initializePushNotifications(_user) {
     var pushLib = require('pushNotifications');
 
     // initialize PushNotifications
-    pushLib.initialize(_user, 
+    pushLib.initialize(_user,
     // notification received callback
     function(_pushData) {
         Ti.API.info('I GOT A PUSH NOTIFICATION');
@@ -184,12 +191,12 @@ function initializePushNotifications(_user) {
             }).show();
         }
 
-    }, 
+    },
     // registration callback parameter
     function(_pushInitData) {
         if (_pushInitData.success) {
-          // save the token so we know it was initialized
-          Alloy.Globals.pushToken = _pushInitData.data.deviceToken;
+            // save the token so we know it was initialized
+            Alloy.Globals.pushToken = _pushInitData.data.deviceToken;
         } else {
             alert("Error Initializing Push Notifications");
             Alloy.Globals.pushToken = null;
