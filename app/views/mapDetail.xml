@@ -1,5 +1,5 @@
 <Alloy>
-    <Window id="mainWindow"  fullscreen="false" >
+    <Window id="mainWindow"  fullscreen="false" title = "Photo Detail">
         <View class="container">
             <Label id="titleLabel"></Label>
             <View id="imageContainer">
