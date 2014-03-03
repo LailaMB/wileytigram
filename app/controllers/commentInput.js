@@ -35,7 +35,7 @@ function handleButtonClicked(_event) {
 
     // give pause for animation
     setTimeout(function() {
-        $.mainWindow.close();
+        $.getView().close();
     }, 200);
 }
 
