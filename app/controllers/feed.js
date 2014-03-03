@@ -56,6 +56,13 @@ $.cameraButtonClicked = function(_event) {
                     } else {
                         $.feedTable.insertRowBefore(0, rowController.getView(), true);
                     }
+
+                    //now add to the backbone collection
+                    var collection = Alloy.Collections.instance("Photo");
+                    collection.add(processResponse.model, {
+                        at : 0,
+                        silent : true
+                    });
                 } else {
                     alert("Error saving photo " + processResponse.message);
                 }
