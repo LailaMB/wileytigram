@@ -18,11 +18,32 @@ $.mapview.addEventListener('click', mapAnnotationClicked);
  * device camera and allow the user to take a photo
  */
 $.cameraButtonClicked = function(_event) {
-    var photoSource = !Ti.Media.isCameraSupported ? Titanium.Media.openPhotoGallery : Titanium.Media.showCamera;
-    photoSource({
+    var photoSource;
+    if (Ti.Media.isCameraSupported === false) {
+        photoSource = 'openPhotoGallery';
+    } else {
+        photoSource = 'showCamera';
+    }
+    Titanium.Media[photoSource]({
         success : function(event) {
 
-            processImage(event.media, function(processResponse) {
+            Alloy.Globals.PW.showIndicator("Saving Image");
+            var ImageFactory = require('ti.imagefactory');
+
+            if (OS_ANDROID || event.media.width > 700) {
+                var w, h;
+                w = event.media.width * .50;
+                h = event.media.height * .50;
+                $.resizedPhoto = ImageFactory.imageAsResized(event.media, {
+                    width : w,
+                    height : h
+                });
+            } else {
+                // we do not need to compress here
+                $.resizedPhoto = event.media;
+            }
+
+            processImage($.resizedPhoto, function(processResponse) {
 
                 if (processResponse.success) {
                     // create the row
@@ -38,6 +59,8 @@ $.cameraButtonClicked = function(_event) {
                 } else {
                     alert("Error saving photo " + processResponse.message);
                 }
+
+                Alloy.Globals.PW.hideIndicator();
             });
 
         },
@@ -93,34 +116,34 @@ function processImage(_mediaObject, _callback) {
             success : function(_model, _response) {
                 Ti.API.debug('success: ' + _model.toJSON());
                 currentUser.getFollowers(function(_resp) {
-                if (_resp.success) {
-                    $.followersList = _.pluck(_resp.collection.models, "id");
+                    if (_resp.success) {
+                        $.followersList = _.pluck(_resp.collection.models, "id");
 
-                    // send a push notification to all friends
-                    var msg = "New photo posted by " + currentUser.get("email");
+                        // send a push notification to all friends
+                        var msg = "New photo posted by " + currentUser.get("email");
 
-                    // make the api call using the library
-                    push.sendPush({
-                        payload : {
-                            custom : {
-                                photo_id : _model.get("id"),
+                        // make the api call using the library
+                        push.sendPush({
+                            payload : {
+                                custom : {
+                                    photo_id : _model.get("id"),
+                                },
+                                sound : "default",
+                                alert : msg
                             },
-                            sound : "default",
-                            alert : msg
-                        },
-                        to_ids : $.followersList.join(),
-                    }, function(_repsonsePush) {
-                        if (_repsonsePush.success) {
-                            alert("Notified friends of new photo");
-                        } else {
-                            alert("Error notifying friends of new photo");
-                        }
-                    });
-                } else {
-                    alert("Error updating friends and followers");
-                    _callback();
-                }
-            });
+                            to_ids : $.followersList.join(),
+                        }, function(_repsonsePush) {
+                            if (_repsonsePush.success) {
+                                alert("Notified friends of new photo");
+                            } else {
+                                alert("Error notifying friends of new photo");
+                            }
+                        });
+                    } else {
+                        alert("Error updating friends and followers");
+                        _callback();
+                    }
+                });
                 _callback({
                     model : _model,
                     message : null,
@@ -242,8 +265,6 @@ function handleShareButtonClicked(_event) {
         model : model
     });
 }
-
-
 
 function filterTabbedBarClicked(_event) {
     var itemSelected = OS_IOS ? _event.index : _event.rowIndex;
