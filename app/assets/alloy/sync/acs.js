@@ -149,6 +149,21 @@ function processACSComments(model, method, opts) {
 function processACSUsers(_model, _method, _opts) {
     switch (_method) {
         case "update" :
+            var params = _model.toJSON();
+
+            // execute the update
+            Cloud.Users.update(params, function(e) {
+                if (e.success) {
+                    _model.meta = e.meta;
+
+                    // execute the success callback
+                    _opts.success && _opts.success(e.users[0]);
+                    _model.trigger("fetch");
+                } else {
+                    Ti.API.error(e);
+                    _opts.error && _opts.error(e.error && e.message || e);
+                }
+            });
             break;
         case "read":
 
