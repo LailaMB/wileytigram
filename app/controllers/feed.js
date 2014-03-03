@@ -43,11 +43,11 @@ $.cameraButtonClicked = function(_event) {
                 $.resizedPhoto = event.media;
             }
 
-            processImage($.resizedPhoto, function(processResponse) {
+            processImage($.resizedPhoto, function(_processResp) {
 
-                if (processResponse.success) {
+                if (_processResp.success) {
                     // create the row
-                    var rowController = Alloy.createController("feedRow", processResponse.model);
+                    var rowController = Alloy.createController("feedRow", _processResp.model);
 
                     // add the controller view, which is a row to the table
                     if ($.feedTable.getData().length === 0) {
@@ -59,12 +59,12 @@ $.cameraButtonClicked = function(_event) {
 
                     //now add to the backbone collection
                     var collection = Alloy.Collections.instance("Photo");
-                    collection.add(processResponse.model, {
+                    collection.add(_processResp.model, {
                         at : 0,
                         silent : true
                     });
                 } else {
-                    alert("Error saving photo " + processResponse.message);
+                    alert("Error saving photo " + _processResp.message);
                 }
 
                 Alloy.Globals.PW.hideIndicator();
