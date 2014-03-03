@@ -23,7 +23,8 @@
     height :'100dp',
     borderColor : '#CCC',
     border : '1dp',
-    image : 'missing.gif'
+    image : 'missing.gif',
+    hires : true
 },
 '#statsBox' : {
     layout : 'vertical',

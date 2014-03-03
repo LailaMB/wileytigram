@@ -11,6 +11,7 @@
   left : '10dp',
   width : '280dp',
   height : '280dp',
+  hires : true
 },
 "#buttonContainer" : {
   layout : 'horizontal',
