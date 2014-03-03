@@ -18,9 +18,8 @@ $.mapview.addEventListener('click', mapAnnotationClicked);
  * device camera and allow the user to take a photo
  */
 $.cameraButtonClicked = function(_event) {
-    alert("user clicked camera button");
-
-    Titanium.Media.showCamera({
+    var photoSource = !Ti.Media.isCameraSupported ? Titanium.Media.openPhotoGallery : Titanium.Media.showCamera;
+    photoSource({
         success : function(event) {
 
             processImage(event.media, function(processResponse) {
@@ -87,12 +86,13 @@ function processImage(_mediaObject, _callback) {
         }
 
         var photo = Alloy.createModel('Photo', parameters);
+        var currentUser = Alloy.Globals.currentUser;
 
         photo.save({}, {
 
             success : function(_model, _response) {
                 Ti.API.debug('success: ' + _model.toJSON());
-                            currentUser.getFollowers(function(_resp) {
+                currentUser.getFollowers(function(_resp) {
                 if (_resp.success) {
                     $.followersList = _.pluck(_resp.collection.models, "id");
 
