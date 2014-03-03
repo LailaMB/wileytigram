@@ -55,7 +55,125 @@ function handleLogoutBtnClick(argument) {
     });
 }
 
-function handleProfileImageClick(argument) {
+/**
+ * change the user's custom profile photo by clicking on the
+ * existing photo
+ */
+function handleProfileImageClick() {
+    var dopts = {
+        options : ['Take Photo', 'Open Photo Gallery'],
+        title : 'Pick Photo Source'
+    };
+
+    if (OS_IOS) {
+        dopts.options.push('Cancel');
+        dopts.cancel = dopts.options.length - 1;
+    } else {
+        dopts.buttonNames = ['Cancel'];
+    }
+    var optionDialog = Ti.UI.createOptionDialog(dopts);
+
+    optionDialog.addEventListener('click', function(e) {
+        var options = {
+            success : processPhoto,
+            cancel : function() {
+            },
+            error : function(e) {
+                Ti.API.error(JSON.stringify(e));
+            },
+            allowEditing : true,
+            mediaTypes : [Ti.Media.MEDIA_TYPE_PHOTO],
+        };
+        if (e.button) {
+            return;
+        } else if (e.index == 0) {
+            Ti.Media.showCamera(options);
+        } else if (e.index == 1) {
+            Ti.Media.openPhotoGallery(options);
+        }
+
+    });
+
+    optionDialog.show();
+}
+
+function processPhoto(_event) {
+
+    Alloy.Globals.PW.showIndicator("Saving Image");
+    var ImageFactory = require('ti.imagefactory');
+
+    if (OS_ANDROID || _event.media.width > 700) {
+        var w, h;
+        w = _event.media.width * .50;
+        h = _event.media.height * .50;
+        $.currentUserCustomPhoto = ImageFactory.imageAsResized(_event.media, {
+            width : w,
+            height : h
+        });
+    } else {
+        // we do not need to compress here
+        $.currentUserCustomPhoto = _event.media;
+    }
+
+    Alloy.Globals.currentUser.save({
+        "photo" : $.currentUserCustomPhoto,
+        "photo_sizes[thumb_100]" : "100x100#",
+        // We need this since we are showing the image immediately
+        "photo_sync_sizes[]" : "thumb_100",
+    }, {
+        success : function(_model, _response) {
+
+            // take the cropped thumb and display it
+            setTimeout(function() {
+
+                // give ACS some time to process image then get updated
+                // user object
+                Alloy.Globals.currentUser.showMe(function(_resp) {
+                    Alloy.Globals.PW.hideIndicator();
+
+                    _resp.model && (Alloy.Globals.currentUser = _resp.model);
+                    if (_resp.model.attributes.photo.processed) {
+                        $.profileImage.image = _resp.model.attributes.photo.urls.thumb_100;
+                        alert("Your profile photo has been changed.");
+                    } else {
+                        $.profileImage.image = _resp.model.attributes.photo.urls.original;
+
+                        alert("Your profile photo has been changed, thumbnail process not complete!");
+                        // clear out values force refresh on next focus if we
+                        // still dont have an image
+                        $.currentUserCustomPhoto = null;
+                        $.initialized = false;
+                    }
+                });
+            }, 3000);
+        },
+        error : function(error) {
+            Alloy.Globals.PW.hideIndicator();
+            alert("An error occurred while trying to save your profile " + String(error));
+            Ti.API.error(error);
+            return;
+        }
+    });
+}
+
+function loadProfileInformation() {
+    // get the attributes from the current user
+    var attributes = Alloy.Globals.currentUser.attributes;
+    var currentUser = Alloy.Globals.currentUser;
+
+    Ti.API.debug(JSON.stringify(Alloy.Globals.currentUser, null, 2));
+
+    // set the user profile photo
+    if ($.currentUserCustomPhoto) {
+        $.profileImage.image = $.currentUserCustomPhoto;
+    } else if (attributes.photo && attributes.photo.urls) {
+        $.profileImage.image = attributes.photo.urls.thumb_100 || attributes.photo.urls.original;
+    } else if ( typeof (attributes.external_accounts) !== "undefined") {
+        $.profileImage.image = 'https://graph.facebook.com/' + attributes.username + '/picture';
+    } else {
+        Ti.API.debug('no photo using missing gif');
+        $.profileImage.image = '/missing.gif';
+    }
 }
 
 function closeWindowEventHandler(argument) {
@@ -64,3 +182,11 @@ function closeWindowEventHandler(argument) {
 function androidBackEventHandler(argument) {
 }
 
+// we need to fetch the content when the view gains focus NOT on open
+// this will ensure the content is refreshed
+$.getView().addEventListener("focus", function() {
+    setTimeout(function() {
+        !$.initialized && loadProfileInformation();
+        $.initialized = true;
+    }, 200);
+});
