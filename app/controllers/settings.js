@@ -11,6 +11,10 @@ $.getView().addEventListener("close", closeWindowEventHandler);
 /* listen for android back event to do some clean up */
 $.getView().addEventListener("androidback", androidBackEventHandler);
 
+/* listen for click on refreshBtn to refresh data */
+$.refreshBtn.addEventListener("click", loadProfileInformation);
+
+
 /* keep state of friends connections */
 $.connectedToFriends = false;
 
@@ -144,6 +148,7 @@ function processPhoto(_event) {
                         $.currentUserCustomPhoto = null;
                         $.initialized = false;
                     }
+
                 });
             }, 3000);
         },
@@ -157,9 +162,17 @@ function processPhoto(_event) {
 }
 
 function loadProfileInformation() {
+    Alloy.Globals.PW.showIndicator("Loading Profile Information");
+
     // get the attributes from the current user
     var attributes = Alloy.Globals.currentUser.attributes;
     var currentUser = Alloy.Globals.currentUser;
+
+    if (attributes.firstName && attributes.lastName) {
+        $.fullname.text = attributes.firstName + " " + attributes.lastName;
+    } else {
+        $.fullname.text = attributes.username;
+    }
 
     Ti.API.debug(JSON.stringify(Alloy.Globals.currentUser, null, 2));
 
@@ -174,6 +187,25 @@ function loadProfileInformation() {
         Ti.API.debug('no photo using missing gif');
         $.profileImage.image = '/missing.gif';
     }
+
+    currentUser.showMe(function(_response) {
+        if (_response.success) {
+            $.photoCount.text = _response.model.get("stats").photos.total_count;
+        } else {
+            alert("Error getting user information");
+        }
+
+        // get the friends count
+        currentUser.getFriends(function(_response2) {
+            if (_response2.success) {
+                $.friendCount.text = _response2.collection.length;
+            } else {
+                alert("Error getting user friend information");
+            }
+
+            Alloy.Globals.PW.hideIndicator();
+        });
+    });
 }
 
 function closeWindowEventHandler(argument) {
