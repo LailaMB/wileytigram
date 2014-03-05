@@ -18,7 +18,24 @@
                     </View>
                 </View>
             </View>
-            <View id='mainBody'></View>
+            <View id='mainBody' layout='vertical'>
+                <Label class='sectionHdr  top20dp'>Social Media</Label>
+                <View class='sectionSeperator'/>
+                <View class='switchContainer'>
+                    <Label class='switchLabel'>Facebook Status</Label>
+                    <Switch id='facebookBtn' onChange='onSwitchChange'></Switch>
+                </View>
+                <View class='switchContainer'>
+                    <Label class='switchLabel'>Twitter Status</Label>
+                    <Switch id='twitterBtn' onChange='onSwitchChange'></Switch>
+                </View>
+                <Label class='sectionHdr top10dp'>Push Notification</Label>
+                <View class='sectionSeperator'/>
+                <View class='switchContainer'>
+                    <Label class='switchLabel'>Notifications Status</Label>
+                    <Switch id='notificationsBtn' onChange='onSwitchChange'></Switch>
+                </View>
+            </View>
             <Button id='refreshBtn'></Button>
         </Window>
     </Tab>

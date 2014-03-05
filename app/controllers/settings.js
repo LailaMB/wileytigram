@@ -1,3 +1,6 @@
+/* this is the library used for facebook and twitter sharing */
+var sharing = require("sharing");
+
 /* EVENT HANDLERS */
 /* in IOS we need to support the button click */
 OS_IOS && $.logoutBtn.addEventListener("click", handleLogoutBtnClick);
@@ -14,7 +17,6 @@ $.getView().addEventListener("androidback", androidBackEventHandler);
 /* listen for click on refreshBtn to refresh data */
 $.refreshBtn.addEventListener("click", loadProfileInformation);
 
-
 /* keep state of friends connections */
 $.connectedToFriends = false;
 
@@ -30,6 +32,52 @@ $.onSwitchChangeActive = false;
 $.handleLogoutMenuClick = function(_event) {
     handleLogoutBtnClick(_event);
 };
+
+function activateOnSwitchChange() {
+    setTimeout(function() {
+        $.onSwitchChangeActive = true;
+    }, 200);
+}
+
+function onSwitchChange(_event) {
+    // dont respond to events until initialization is completed
+    if ($.onSwitchChangeActive === false) {
+        return;
+    }
+
+    $.onSwitchChangeActive = false;
+
+    var selItem = _event.source;
+    switch (selItem.id) {
+        case "notificationsBtn" :
+            break;
+        case "twitterBtn":
+            if (Alloy.Globals.TW.isAuthorized() === false) {
+                Alloy.Globals.TW.authorize(function(_response) {
+                    selItem.value = _response.userid ? true : false;
+                    activateOnSwitchChange();
+                });
+            } else {
+                Alloy.Globals.TW.deauthorize();
+                selItem.value = false;
+                activateOnSwitchChange();
+            }
+            break;
+        case "facebookBtn":
+            if (Alloy.Globals.FB.getLoggedIn() === true) {
+                Alloy.Globals.FB.logout();
+                selItem.value = false;
+                activateOnSwitchChange();
+            } else {
+                sharing.prepForFacebookShare(function(_success) {
+                    selItem.value = _success;
+                    activateOnSwitchChange();
+                });
+            }
+            break;
+    }
+
+}
 
 /**
  * when the user logs out, remove them from social media connections,
@@ -206,6 +254,12 @@ function loadProfileInformation() {
             Alloy.Globals.PW.hideIndicator();
         });
     });
+
+    // load the social media settings
+    $.twitterBtn.value = Alloy.Globals.TW.isAuthorized();
+    $.facebookBtn.value = Alloy.Globals.FB.getLoggedIn();
+
+    $.onSwitchChangeActive = true;
 }
 
 function closeWindowEventHandler(argument) {

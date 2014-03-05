@@ -88,4 +88,66 @@
 },
 '#refreshBtn[platform=android]' : {
     height : '42dp',
-}
+},
+'#mainBody' : {
+  layout : 'vertical'
+},
+'.top20dp' : {
+    top :'20dp',
+},
+'.sectionHdr' : {
+    width : Ti.UI.FILL,
+    height :Ti.UI.SIZE,   
+    color : '#444', 
+    font : {
+        fontWeight : 'bold',
+        fontSize : '16dp',
+    }
+},
+'.sectionSeperator[platform=ios]' : {
+    width : '80%',
+    height :'1dp',    
+    backgroundColor : '#CCC'
+},
+'.sectionSeperator[platform=android]' : {
+    width : '90%',
+    height :'1dp',    
+    backgroundColor : '#CCC'
+},
+'.switchContainer[platform=ios]' : {
+    top : '4dp',
+    height : '38dp',
+    layout : 'horizontal',
+    width : '100%',    
+},
+'.switchContainer[platform=android]' : {
+    top : '4dp',
+    height : Ti.UI.SIZE,
+    layout : 'horizontal',
+    width : '100%',    
+},
+'.switchLabel' : {
+    textAlign : 'right',
+    left : 0,
+    right : '30dp',
+    width : '60%',
+    color : '#444', 
+    center : {
+      y : '50%'
+    },    
+},
+'Switch[platform=android]' : {
+  titleOn:'Enabled',
+  titleOff:'Disabled',
+  value:true,
+  width: '100dp', 
+  height:'44dp' 
+},
+'Switch[platform=ios]' : {
+    value : true, // mandatory property for iOS
+    left : '8dp',
+    height : '28dp',
+    center : {
+      y : '50%'
+    },
+},

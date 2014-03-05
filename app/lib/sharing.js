@@ -124,6 +124,8 @@ function prepForFacebookShare(_callback) {
 	}
 }
 
+exports.prepForFacebookShare = prepForFacebookShare;
+
 function downloadFile(url, _path, _callback, _progress) {
 	Alloy.Globals.PW.showIndicator("downloading file");
 	_path && Ti.API.debug("downloading " + url + "  as " + _path);
