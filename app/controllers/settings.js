@@ -1,6 +1,10 @@
 /* this is the library used for facebook and twitter sharing */
 var sharing = require("sharing");
 
+/* this is the library used for supporting push notiofications in the application
+ * */
+var pushLib = require('pushNotifications');
+
 /* EVENT HANDLERS */
 /* in IOS we need to support the button click */
 OS_IOS && $.logoutBtn.addEventListener("click", handleLogoutBtnClick);
@@ -50,6 +54,26 @@ function onSwitchChange(_event) {
     var selItem = _event.source;
     switch (selItem.id) {
         case "notificationsBtn" :
+            if ($.connectedToFriends === true) {
+                pushLib.pushUnsubscribe({
+                    channel : "friends",
+                    device_token : Alloy.Globals.pushToken
+                }, function(_response) {
+                    if (_response.success) {
+                        // unsubscribe worked
+                        selItem.value = $.connectedToFriends = false;
+                        activateOnSwitchChange();
+                    }
+                });
+            } else {
+                pushLib.subscribe("friends", Alloy.Globals.pushToken, function(_response) {
+                    if (_response.success) {
+                        // subscribe worked
+                        selItem.value = $.connectedToFriends = true;
+                        activateOnSwitchChange();
+                    }
+                });
+            }
             break;
         case "twitterBtn":
             if (Alloy.Globals.TW.isAuthorized() === false) {
@@ -247,6 +271,18 @@ function loadProfileInformation() {
         currentUser.getFriends(function(_response2) {
             if (_response2.success) {
                 $.friendCount.text = _response2.collection.length;
+
+                // get the push notifications status
+                pushLib.getChannels(currentUser, function(_response3) {
+                    var friendActive;
+                    if (_response3.success) {
+                        $.connectedToFriends = (_.contains(_response3.data.channel, "friends") !== -1);
+                        $.notificationsBtn.value = $.connectedToFriends;
+                    } else {
+                        $.notificationsBtn.value = $.connectedToFriends = false;
+                    }
+                });
+
             } else {
                 alert("Error getting user friend information");
             }
