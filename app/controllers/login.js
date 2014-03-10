@@ -196,6 +196,6 @@ $.open = function(_reset) {
  * close the window/controller, do some clean up here
  * if needed
  */
-$.close = function() { debugger;
+$.close = function() { 
 	$.index.close();
 };

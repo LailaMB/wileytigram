@@ -1,8 +1,12 @@
 {
     "global": {},
-    "env:development": {},
+    "env:development": {
+        "isDevelopment" : true
+    },
     "env:test": {},
-    "env:production": {},
+    "env:production": {
+        "isProduction" : true
+    },
     "os:android": {},
     "os:blackberry": {},
     "os:ios": {},

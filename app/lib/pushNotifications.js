@@ -92,7 +92,7 @@ exports.subscribe = function(_channel, _token, _callback) {
 	});
 };
 
-exports.sendPush = function(_params, _callback) { debugger;
+exports.sendPush = function(_params, _callback) { 
 
 	if (Alloy.Globals.pushToken === null) {
 		_callback({
@@ -214,3 +214,48 @@ function pushRegisterSuccess(_data, _callback) {
 		}
 	});
 }
+exports.getChannels = function(_user, _callback) {
+
+    var xhr = Ti.Network.createHTTPClient();
+
+    // create the url with params
+
+    // get the environment specific Key
+    //var acsKeyName = "acs-api-key-development" + (Alloy.CFG.isProduction ? "production" : "development");
+	var acsKeyName = "acs-api-key-" + (Alloy.CFG.isProduction ? "production" : "development");
+
+    // construct the URL
+    var url = "https://api.cloud.appcelerator.com/v1/push_notification/query.json?key=";
+    url += Ti.App.Properties.getString(acsKeyName);
+    url += "&user_id=" + _user.id;
+
+    xhr.open("GET", url);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onerror = function(e) {
+        alert(e);
+        Ti.API.info(" " + String(e));
+    };
+    xhr.onload = function() {
+        try {
+            Ti.API.debug(" " + xhr.responseText);
+            var data = JSON.parse(xhr.responseText);
+            var subscriptions = data.response.subscriptions[0];
+            Ti.API.info(JSON.stringify(subscriptions));
+
+            _callback && _callback({
+                success : true,
+                data : subscriptions,
+            });
+        } catch(E) {
+            Ti.API.error(" " + String(E));
+
+            _callback && _callback({
+                success : false,
+                data : null,
+                error : E
+            });}
+    };
+
+    xhr.send();
+};
+

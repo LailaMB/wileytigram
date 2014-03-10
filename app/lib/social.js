@@ -591,7 +591,7 @@ var OAuthAdapter = function(pConsumerSecret, pConsumerKey, pSignatureMethod) {
 	    client = Ti.Network.createHTTPClient({
 	        onload : function() {
 	           if (client.status == 200) {
-	              pSuccessMessage && pSuccessMessage(this.responseText)
+	              pSuccessMessage && pSuccessMessage(this.responseText);
 	           } else {
 	              pErrorMessage && pErrorMessage(this.responseText);
 	           }

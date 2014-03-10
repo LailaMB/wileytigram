@@ -60,7 +60,7 @@ exports.definition = {
 					}
 					// get all of the current users friends
 					_user.getFriends(function(_resp) {
-						if (_resp.success) { debugger;
+						if (_resp.success) { 
 
 							var idList = _.pluck(_resp.collection.models, "id");
 							idList.push(_user.id);

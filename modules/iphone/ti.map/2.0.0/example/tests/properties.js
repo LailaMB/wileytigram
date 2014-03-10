@@ -64,4 +64,4 @@ exports.run = function(UI, Map) {
     win.add(map);
     
     win.open();
-}
+};
